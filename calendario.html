@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>SANTI FITNESS • Calendario PRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
+<script src="assets/js/auth.js"></script>
+<style>
+:root{--neon:#00ffc8; --gold:#d4af37; --bg:#070707; --card:#0f0f0f; --muted:#9aa; --purple:#c44dff; --pink:#ff6b9d; --cyan:#00d4ff;}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Montserrat',sans-serif; background:linear-gradient(180deg, #000 0%, #0f2027 50%, #001a33 100%); color:white; overflow-x:hidden; min-height:100vh;}
+header{position:sticky; top:0; z-index:50; padding:20px; background:linear-gradient(135deg, #0a0a0a, #1a1a1a); box-shadow:0 0 50px rgba(0, 255, 200, 0.3); display:flex; justify-content:space-between; align-items:center;}
+header h1{margin:0; font-size:32px; letter-spacing:3px;}
+header span{color:var(--neon);}
+.header-right{display:flex; gap:15px;}
+button.nav{padding:10px 16px; border-radius:8px; border:none; background:rgba(0, 255, 200, 0.1); color:white; cursor:pointer; font-weight:600; transition:all 0.3s; font-size:13px; border:1px solid var(--neon);}
+button.nav:hover{background:rgba(0, 255, 200, 0.2); transform:translateY(-2px);}
+.container{max-width:1200px; margin:30px auto; padding:0 15px;}
+.stats{display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:15px; margin-bottom:30px;}
+.stat-box{background:linear-gradient(135deg, rgba(20, 30, 40, 0.9), rgba(10, 10, 20, 0.95)); border-radius:14px; padding:20px; border:1px solid rgba(0, 255, 200, 0.15); text-align:center;}
+.stat-value{font-size:32px; font-weight:800; color:var(--neon);}
+.stat-label{font-size:12px; color:#999; margin-top:8px; text-transform:uppercase;}
+.controls{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:15px;}
+.controls h2{color:var(--neon); margin:0; font-size:24px;}
+.btn-group{display:flex; gap:10px; flex-wrap:wrap;}
+button.btn{padding:10px 18px; border-radius:8px; border:none; background:linear-gradient(135deg, var(--neon), #00c8ff); color:black; cursor:pointer; font-weight:600; transition:all 0.3s; font-size:13px;}
+button.btn:hover{transform:translateY(-2px); box-shadow:0 6px 20px rgba(0, 255, 200, 0.4);}
+.calendar-grid{display:grid; grid-template-columns:repeat(7, 1fr); gap:12px; margin-bottom:30px;}
+.day-header{text-align:center; padding:12px; color:var(--neon); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:1px; background:rgba(0, 255, 200, 0.05); border-radius:8px; border-bottom:2px solid var(--neon);}
+.day{background:linear-gradient(135deg, rgba(20, 30, 40, 0.8), rgba(10, 10, 20, 0.95)); border-radius:14px; padding:15px; border:1px solid rgba(0, 255, 200, 0.15); min-height:200px; cursor:pointer; transition:all 0.3s; position:relative; overflow:hidden;}
+.day:hover{transform:translateY(-4px); border-color:rgba(0, 255, 200, 0.4); box-shadow:0 12px 32px rgba(0, 255, 200, 0.15);}
+.day.rest{background:linear-gradient(135deg, rgba(196, 77, 255, 0.15), rgba(150, 100, 200, 0.1)); border-color:var(--purple);}
+.day.today{border:2px solid var(--neon); box-shadow:0 0 20px rgba(0, 255, 200, 0.3), inset 0 0 10px rgba(0, 255, 200, 0.1);}
+.day.other{opacity:0.3; pointer-events:none;}
+.day-num{font-size:18px; font-weight:700; color:var(--neon); margin-bottom:10px;}
+.exercises{display:flex; flex-direction:column; gap:8px; margin-bottom:10px;}
+.exe{background:rgba(0, 255, 200, 0.1); border:1px solid rgba(0, 255, 200, 0.2); border-radius:8px; padding:8px; font-size:11px; color:var(--cyan); font-weight:600; text-align:center; cursor:pointer; transition:all 0.3s;}
+.exe:hover{background:rgba(0, 255, 200, 0.2); transform:scale(1.02);}
+.rest-label{text-align:center; color:var(--purple); font-weight:700; margin-top:30px; font-size:13px;}
+.btns{display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:10px;}
+.btns button{padding:8px 6px; font-size:11px; border:none; border-radius:6px; cursor:pointer; font-weight:600; transition:all 0.3s;}
+.btn-add{background:rgba(0, 255, 200, 0.1); border:1px dashed rgba(0, 255, 200, 0.3); color:var(--neon);}
+.btn-add:hover{background:rgba(0, 255, 200, 0.2);}
+.btn-rest{background:rgba(196, 77, 255, 0.1); border:1px dashed rgba(196, 77, 255, 0.3); color:var(--purple);}
+.btn-rest:hover{background:rgba(196, 77, 255, 0.2);}
+.modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.92); display:none; justify-content:center; align-items:center; opacity:0; pointer-events:none; transition:opacity 0.3s; backdrop-filter:blur(5px); z-index:200;}
+.modal.active{display:flex; opacity:1; pointer-events:auto;}
+.modal-box{background:linear-gradient(135deg, rgba(20, 30, 40, 0.98), rgba(10, 10, 20, 0.98)); padding:30px; border-radius:18px; max-width:500px; width:90%; border:1px solid rgba(0, 255, 200, 0.2); box-shadow:0 20px 60px rgba(0, 0, 0, 0.8); max-height:85vh; overflow-y:auto; position:relative;}
+.close{position:absolute; top:15px; right:15px; background:linear-gradient(135deg, #ff3333, #ff0000); color:white; border:none; width:40px; height:40px; border-radius:50%; font-size:24px; cursor:pointer; transition:all 0.3s;}
+.close:hover{transform:scale(1.1);}
+.modal-box h2{color:var(--neon); font-size:24px; margin-top:0;}
+.form-g{margin:15px 0;}
+.form-g label{display:block; color:var(--neon); font-weight:600; margin-bottom:8px; font-size:13px;}
+.form-g input, .form-g select, .form-g textarea{width:100%; padding:11px; border-radius:8px; border:1px solid rgba(0, 255, 200, 0.2); background:rgba(10, 10, 20, 0.8); color:white; font-family:inherit; font-size:13px;}
+.form-g input:focus, .form-g select:focus, .form-g textarea:focus{outline:none; border-color:var(--neon); box-shadow:0 0 20px rgba(0, 255, 200, 0.3);}
+.modal-btns{display:flex; gap:12px; margin-top:20px;}
+.modal-btns button{flex:1; padding:11px; border:none; border-radius:8px; font-weight:600; cursor:pointer; transition:all 0.3s; font-size:13px;}
+.btn-save{background:linear-gradient(135deg, var(--neon), #00c8ff); color:black;}
+.btn-save:hover{transform:translateY(-2px); box-shadow:0 6px 16px rgba(0, 255, 200, 0.6);}
+.btn-cancel{background:rgba(0, 255, 200, 0.1); color:white; border:1px solid rgba(0, 255, 200, 0.2);}
+.btn-cancel:hover{background:rgba(0, 255, 200, 0.2);}
+.notif{position:fixed; top:20px; right:20px; background:linear-gradient(135deg, var(--neon), #00c8ff); color:black; padding:16px 24px; border-radius:10px; font-weight:600; z-index:300; box-shadow:0 8px 24px rgba(0, 255, 200, 0.4); animation:slideIn 0.4s ease; display:none;}
+@keyframes slideIn{from{transform:translateX(400px); opacity:0;} to{transform:translateX(0); opacity:1;}}
+@media(max-width:768px){.calendar-grid{grid-template-columns:repeat(auto-fit, minmax(90px, 1fr));} .day{min-height:140px; padding:10px;} header h1{font-size:24px;} .controls{flex-direction:column; align-items:flex-start;}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span>SANTI</span> FITNESS • CALENDARIO PRO</h1>
+  <div id="headerRight"></div>
+</header>
+
+<div class="container">
+  <div class="controls">
+    <h2 id="monthTitle"></h2>
+    <div class="btn-group">
+      <button class="btn" onclick="prevMonth()">◀ Anterior</button>
+      <button class="btn" onclick="todayMonth()">Hoy</button>
+      <button class="btn" onclick="nextMonth()">Siguiente ▶</button>
+      <button class="btn" style="background:linear-gradient(135deg, var(--gold), #ffd700); color:black;" onclick="openQuickAdd()">⚡ Rápido</button>
+    </div>
+  </div>
+
+  <div class="calendar-grid" id="calGrid"></div>
+</div>
+
+<!-- MODAL: QUICK ADD -->
+<div id="quickModal" class="modal">
+  <div class="modal-box" style="max-width:380px;">
+    <button class="close" onclick="closeQuickAdd()">✕</button>
+    <h2>⚡ Entrada Rápida</h2>
+    <p style="color:#999; font-size:12px; margin:0 0 15px 0;">Solo lo esencial. ¡Rápido!</p>
+    
+    <div class="form-g">
+      <label>📅 Fecha</label>
+      <input type="date" id="quickDate">
+    </div>
+
+    <div class="form-g">
+      <label>🏋️ Ejercicio*</label>
+      <input type="text" id="quickExercise" placeholder="Press Banca" list="quickList" required>
+      <datalist id="quickList"></datalist>
+    </div>
+
+    <div class="form-g">
+      <label>🔢 Series x Reps</label>
+      <input type="text" id="quickSets" placeholder="3x10" value="3x10">
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-save" onclick="saveQuick()" style="grid-column:1/-1;">Guardar</button>
+      <button class="btn-cancel" onclick="closeQuickAdd()" style="grid-column:1/-1;">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ADD FULL -->
+<div id="addModal" class="modal">
+  <div class="modal-box">
+    <button class="close" onclick="closeAddModal()">✕</button>
+    <h2>➕ Agregar Ejercicio Completo</h2>
+    
+    <div class="form-g">
+      <label>📅 Fecha*</label>
+      <input type="date" id="inputDate" required>
+    </div>
+
+    <div class="form-g">
+      <label>🏋️ Ejercicio*</label>
+      <input type="text" id="inputExercise" placeholder="Ej: Press Banca" list="exeList" oninput="filterExercises();" required>
+      <datalist id="exeList"></datalist>
+    </div>
+
+    <div class="form-g">
+      <label>💪 Grupo Muscular*</label>
+      <select id="inputMuscle" required>
+        <option value="">Selecciona</option>
+        <option value="Pecho">Pecho</option>
+        <option value="Espalda">Espalda</option>
+        <option value="Pierna">Pierna</option>
+        <option value="Hombro">Hombro</option>
+        <option value="Bíceps">Bíceps</option>
+        <option value="Tríceps">Tríceps</option>
+        <option value="Abdomen">Abdomen</option>
+      </select>
+    </div>
+
+    <div class="form-g">
+      <label>🔢 Series x Reps*</label>
+      <input type="text" id="inputSets" placeholder="Ej: 4x8" required>
+    </div>
+
+    <div class="form-g">
+      <label>⚖️ Peso (kg)</label>
+      <input type="number" id="inputWeight" placeholder="80">
+    </div>
+
+    <div class="form-g">
+      <label>📝 Notas</label>
+      <textarea id="inputNotes" rows="3" placeholder="Observaciones..."></textarea>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-save" onclick="saveExercise()">Guardar</button>
+      <button class="btn-cancel" onclick="closeAddModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: VIEW -->
+<div id="viewModal" class="modal">
+  <div class="modal-box">
+    <button class="close" onclick="closeViewModal()">✕</button>
+    <h2 id="viewTitle"></h2>
+    <div id="viewContent" style="margin-top:20px;"></div>
+    <div class="modal-btns">
+      <button class="btn-save" onclick="openEditExercise()">✏️ Editar</button>
+      <button class="btn-cancel" style="background:rgba(255, 0, 0, 0.2); color:var(--pink);" onclick="deleteExercise()">🗑️ Eliminar</button>
+      <button class="btn-cancel" onclick="closeViewModal()" style="grid-column:1/-1;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDIT EXERCISE -->
+<div id="editModal" class="modal">
+  <div class="modal-box">
+    <button class="close" onclick="closeEditModal()">✕</button>
+    <h2>✏️ Editar Ejercicio</h2>
+    
+    <div class="form-g">
+      <label>📅 Fecha*</label>
+      <input type="date" id="editDate" required>
+    </div>
+
+    <div class="form-g">
+      <label>🏋️ Ejercicio*</label>
+      <input type="text" id="editExercise" placeholder="Ej: Press Banca" list="editList" oninput="filterEditExercises();" required>
+      <datalist id="editList"></datalist>
+    </div>
+
+    <div class="form-g">
+      <label>💪 Grupo Muscular*</label>
+      <select id="editMuscle" required>
+        <option value="">Selecciona</option>
+        <option value="Pecho">Pecho</option>
+        <option value="Espalda">Espalda</option>
+        <option value="Pierna">Pierna</option>
+        <option value="Hombro">Hombro</option>
+        <option value="Bíceps">Bíceps</option>
+        <option value="Tríceps">Tríceps</option>
+        <option value="Abdomen">Abdomen</option>
+      </select>
+    </div>
+
+    <div class="form-g">
+      <label>🔢 Series x Reps*</label>
+      <input type="text" id="editSets" placeholder="Ej: 4x8" required>
+    </div>
+
+    <div class="form-g">
+      <label>⚖️ Peso (kg)</label>
+      <input type="number" id="editWeight" placeholder="80">
+    </div>
+
+    <div class="form-g">
+      <label>📝 Notas</label>
+      <textarea id="editNotes" rows="3" placeholder="Observaciones..."></textarea>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-save" onclick="saveEditExercise()">💾 Guardar Cambios</button>
+      <button class="btn-cancel" onclick="closeEditModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDIT DAY -->
+<div id="editDayModal" class="modal">
+  <div class="modal-box">
+    <button class="close" onclick="closeEditDayModal()">✕</button>
+    <h2 id="editDayTitle">📅 Editar Día</h2>
+    
+    <div style="margin:20px 0;">
+      <p style="color:#999; font-size:12px; margin-bottom:15px;">Gestiona los ejercicios y días de descanso</p>
+      
+      <div style="background:rgba(0,255,200,0.05); padding:15px; border-radius:8px; margin-bottom:15px;">
+        <p style="color:var(--neon); font-weight:700; margin-bottom:10px;">🏋️ Ejercicios del Día:</p>
+        <div id="editDayExercises" style="max-height:200px; overflow-y:auto;"></div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <button class="btn" onclick="openAddFromEditDay()" style="flex:1; background:rgba(0,255,200,0.1); color:var(--neon); border:1px dashed rgba(0,255,200,0.3);">➕ Agregar Ejercicio</button>
+        <button class="btn-rest" onclick="toggleRestFromEditDay()" style="flex:1; padding:10px;">🛌 Marcar/Desmarcar Descanso</button>
+      </div>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeEditDayModal()" style="grid-column:1/-1;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div id="notif" class="notif"></div>
+
+<script src="assets/js/dashboard.js"></script>
+<script>
+
+let allExercises = {};
+let restDays = [];
+let currentDate = new Date();
+let selectedId = null;
+let currentEditDate = null;
+
+// LISTA DE EJERCICIOS
+function getDateString(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// FUNCIÓN PARA OBTENER HOY SIN PROBLEMA
+function getTodayString() {
+  return getDateString(new Date());
+}
+
+// Cargar datos del usuario
+function loadCalendarData() {
+  if (!isAuthenticated()) {
+    location.href = 'index.html';
+    return;
+  }
+  
+  const savedData = getCalendarData();
+  if (savedData) {
+    allExercises = savedData.exercises || {};
+    restDays = savedData.restDays || [];
+  } else {
+    // Cargar datos antiguos si existen (para compatibilidad)
+    allExercises = JSON.parse(localStorage.getItem('exeList')) || {};
+    restDays = JSON.parse(localStorage.getItem('restList')) || [];
+  }
+}
+
+// Guardar datos del usuario
+function syncCalendarDataToUser() {
+  if (!isAuthenticated()) return;
+  
+  const calendarDataObj = {
+    exercises: allExercises,
+    restDays: restDays,
+    savedDate: new Date().toISOString()
+  };
+  
+  // Llamar a la función global de dashboard.js
+  saveCalendarData(calendarDataObj);
+}
+
+const exeDB=[
+  {name:'Press Banca',muscle:'Pecho'},{name:'Press Inclinado',muscle:'Pecho'},{name:'Aperturas Mancuernas',muscle:'Pecho'},{name:'Flexiones',muscle:'Pecho'},
+  {name:'Dominadas',muscle:'Espalda'},{name:'Remo Barra',muscle:'Espalda'},{name:'Jalón Frontal',muscle:'Espalda'},{name:'Remo Máquina',muscle:'Espalda'},
+  {name:'Sentadilla',muscle:'Pierna'},{name:'Peso Muerto',muscle:'Pierna'},{name:'Leg Press',muscle:'Pierna'},{name:'Zancadas',muscle:'Pierna'},
+  {name:'Press Hombro',muscle:'Hombro'},{name:'Elevación Lateral',muscle:'Hombro'},{name:'Pájaros',muscle:'Hombro'},{name:'Press Arnold',muscle:'Hombro'},
+  {name:'Curl Bíceps',muscle:'Bíceps'},{name:'Curl Martillo',muscle:'Bíceps'},{name:'Curl Predicador',muscle:'Bíceps'},{name:'Curl Concentrado',muscle:'Bíceps'},
+  {name:'Tríceps Cuerda',muscle:'Tríceps'},{name:'Fondos',muscle:'Tríceps'},{name:'Extensión Triceps',muscle:'Tríceps'},{name:'Rompecráneos',muscle:'Tríceps'},
+  {name:'Crunch',muscle:'Abdomen'},{name:'Plancha',muscle:'Abdomen'},{name:'Elevación Piernas',muscle:'Abdomen'},{name:'Russian Twist',muscle:'Abdomen'}
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    if (!isAuthenticated() && !isGuest) {
+      document.body.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; min-height:100vh; text-align:center; background:linear-gradient(180deg, #000 0%, #0f2027 50%, #001a33 100%); color:white;"><div><h2 style="color:#00ffc8; margin-bottom:20px;">⚠️ Acceso Restringido</h2><p style="margin-bottom:20px;">Debes iniciar sesión para acceder al calendario</p><button class="btn btn-primary" onclick="openLoginModal()" style="padding:12px 24px; background:linear-gradient(135deg, #00ffc8, #00c8ff); color:black; border:none; border-radius:8px; font-weight:600; cursor:pointer;">🔐 Iniciar Sesión</button></div></div>';
+      return;
+    }
+    
+    loadCalendarData();
+    renderCalendar();
+    updateStats();
+    document.getElementById('inputDate').value = getDateString(new Date());
+    document.getElementById('quickDate').value = getDateString(new Date());
+  }, 500);
+});
+
+function renderCalendar(){
+  const year=currentDate.getFullYear();
+  const month=currentDate.getMonth();
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const daysInPrevMonth=new Date(year,month,0).getDate();
+  
+  document.getElementById('monthTitle').textContent=currentDate.toLocaleDateString('es-ES',{month:'long',year:'numeric'}).toUpperCase();
+  
+  const grid=document.getElementById('calGrid');
+  grid.innerHTML='';
+  
+  ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'].forEach(d=>{
+    const h=document.createElement('div');
+    h.className='day-header';
+    h.textContent=d;
+    grid.appendChild(h);
+  });
+  
+  for(let i=firstDay-1;i>=0;i--){
+    const d=document.createElement('div');
+    d.className='day other';
+    d.innerHTML=`<div class="day-num">${daysInPrevMonth-i}</div>`;
+    grid.appendChild(d);
+  }
+  
+  const today=getTodayString();
+  for(let day=1;day<=daysInMonth;day++){
+    const date=new Date(year,month,day);
+    const dateStr=getDateString(date);
+    const d=document.createElement('div');
+    d.className='day';
+    
+    if(dateStr===today) d.classList.add('today');
+    
+    if(restDays.includes(dateStr)){
+      d.classList.add('rest');
+      d.innerHTML=`<div class="day-num">${day}</div><div class="rest-label">🛌 DESCANSO</div><div class="btns" style="grid-template-columns:1fr;"><button class="btn-rest" onclick="openEditDay('${dateStr}')">✏️ EDITAR</button></div>`;
+    } else {
+      const exes=allExercises[dateStr] || [];
+      let h=`<div class="day-num">${day}</div>`;
+      if(exes.length>0){
+        h+=`<div class="exercises">${exes.map(e=>`<div class="exe" onclick="viewEx('${e.id}')">${e.name.substring(0,14)}</div>`).join('')}</div>`;
+      }
+      h+=`<div class="btns"><button class="btn-add" onclick="openEditDay('${dateStr}')">✏️ EDITAR</button><button class="btn-rest" onclick="toggleRest('${dateStr}')">🛌</button></div>`;
+      d.innerHTML=h;
+    }
+    
+    grid.appendChild(d);
+  }
+}
+
+function openAdd(dateStr){
+  document.getElementById('inputDate').value=dateStr;
+  document.getElementById('addModal').classList.add('active');
+  document.getElementById('inputExercise').focus();
+}
+
+function closeAddModal(){
+  document.getElementById('addModal').classList.remove('active');
+  document.getElementById('inputExercise').value='';
+  document.getElementById('inputMuscle').value='';
+  document.getElementById('inputSets').value='';
+  document.getElementById('inputWeight').value='';
+  document.getElementById('inputNotes').value='';
+}
+
+function filterExercises(){
+  const input=document.getElementById('inputExercise').value.toLowerCase();
+  const list=document.getElementById('exeList');
+  list.innerHTML='';
+  if(input.length===0) return;
+  exeDB.filter(e=>e.name.toLowerCase().includes(input)).forEach(e=>{
+    const opt=document.createElement('option');
+    opt.value=e.name;
+    list.appendChild(opt);
+  });
+}
+
+function saveExercise(){
+  const date=document.getElementById('inputDate').value;
+  const name=document.getElementById('inputExercise').value;
+  const muscle=document.getElementById('inputMuscle').value;
+  const sets=document.getElementById('inputSets').value;
+  const weight=document.getElementById('inputWeight').value;
+  const notes=document.getElementById('inputNotes').value;
+  
+  if(!date||!name||!muscle||!sets){
+    showNotif('⚠️ Completa todos los campos requeridos');
+    return;
+  }
+  
+  if(!allExercises[date]) allExercises[date]=[];
+  
+  allExercises[date].push({
+    id:Date.now().toString(),
+    name,muscle,sets,weight:weight||'N/A',notes,date
+  });
+  
+  syncCalendarDataToUser();
+  
+  closeAddModal();
+  renderCalendar();
+  showNotif('✅ '+name+' agregado');
+}
+
+function openQuickAdd(){
+  document.getElementById('quickDate').value = getDateString(new Date());
+  document.getElementById('quickExercise').value='';
+  document.getElementById('quickSets').value='3x10';
+  document.getElementById('quickModal').classList.add('active');
+  document.getElementById('quickExercise').focus();
+}
+
+function closeQuickAdd(){
+  document.getElementById('quickModal').classList.remove('active');
+}
+
+function saveQuick(){
+  const date=document.getElementById('quickDate').value;
+  const name=document.getElementById('quickExercise').value;
+  const sets=document.getElementById('quickSets').value;
+  
+  if(!date||!name){
+    showNotif('⚠️ Fecha y Ejercicio requeridos');
+    return;
+  }
+  
+  const exe=exeDB.find(e=>e.name===name);
+  const muscle=exe?exe.muscle:'General';
+  
+  if(!allExercises[date]) allExercises[date]=[];
+  allExercises[date].push({
+    id:Date.now().toString(),
+    name,muscle,sets,weight:'N/A',notes:'',date
+  });
+  
+  syncCalendarDataToUser();
+  closeQuickAdd();
+  renderCalendar();
+  showNotif('⚡ '+name+' guardado');
+}
+
+function viewEx(id){
+  let exe=null;
+  for(const date in allExercises){
+    const found=allExercises[date].find(e=>e.id===id);
+    if(found){exe=found; break;}
+  }
+  if(!exe) return;
+  
+  selectedId=id;
+  document.getElementById('viewTitle').textContent=exe.name;
+  document.getElementById('viewContent').innerHTML=`
+    <p><strong style="color:var(--neon);">💪 Grupo:</strong> ${exe.muscle}</p>
+    <p><strong style="color:var(--neon);">🔢 Series:</strong> ${exe.sets}</p>
+    <p><strong style="color:var(--neon);">⚖️ Peso:</strong> ${exe.weight} kg</p>
+    <p><strong style="color:var(--neon);">📅 Fecha:</strong> ${new Date(exe.date).toLocaleDateString('es-ES')}</p>
+    ${exe.notes?`<p><strong style="color:var(--neon);">📝 Notas:</strong> ${exe.notes}</p>`:''}
+  `;
+  document.getElementById('viewModal').classList.add('active');
+}
+
+function openEditExercise(){
+  if(!selectedId) return;
+  let exe=null;
+  for(const date in allExercises){
+    const found=allExercises[date].find(e=>e.id===selectedId);
+    if(found){exe=found; break;}
+  }
+  if(!exe) return;
+  
+  document.getElementById('editDate').value=exe.date;
+  document.getElementById('editExercise').value=exe.name;
+  document.getElementById('editMuscle').value=exe.muscle;
+  document.getElementById('editSets').value=exe.sets;
+  document.getElementById('editWeight').value=exe.weight==='N/A'?'':exe.weight;
+  document.getElementById('editNotes').value=exe.notes;
+  
+  closeViewModal();
+  document.getElementById('editModal').classList.add('active');
+  document.getElementById('editExercise').focus();
+}
+
+function closeEditModal(){
+  document.getElementById('editModal').classList.remove('active');
+}
+
+function filterEditExercises(){
+  const input=document.getElementById('editExercise').value.toLowerCase();
+  const list=document.getElementById('editList');
+  list.innerHTML='';
+  if(input.length===0) return;
+  exeDB.filter(e=>e.name.toLowerCase().includes(input)).forEach(e=>{
+    const opt=document.createElement('option');
+    opt.value=e.name;
+    list.appendChild(opt);
+  });
+}
+
+function saveEditExercise(){
+  if(!selectedId) return;
+  
+  const newDate=document.getElementById('editDate').value;
+  const newName=document.getElementById('editExercise').value;
+  const newMuscle=document.getElementById('editMuscle').value;
+  const newSets=document.getElementById('editSets').value;
+  const newWeight=document.getElementById('editWeight').value;
+  const newNotes=document.getElementById('editNotes').value;
+  
+  if(!newDate||!newName||!newMuscle||!newSets){
+    showNotif('⚠️ Completa todos los campos requeridos');
+    return;
+  }
+  
+  let oldDate=null;
+  for(const date in allExercises){
+    const idx=allExercises[date].findIndex(e=>e.id===selectedId);
+    if(idx!==-1){
+      oldDate=date;
+      const exe=allExercises[date][idx];
+      exe.name=newName;
+      exe.muscle=newMuscle;
+      exe.sets=newSets;
+      exe.weight=newWeight||'N/A';
+      exe.notes=newNotes;
+      exe.date=newDate;
+      
+      if(oldDate!==newDate){
+        const exeToMove=allExercises[date].splice(idx,1)[0];
+        if(!allExercises[newDate]) allExercises[newDate]=[];
+        allExercises[newDate].push(exeToMove);
+      }
+      break;
+    }
+  }
+  
+  syncCalendarDataToUser();
+  closeEditModal();
+  renderCalendar();
+  showNotif('✅ '+newName+' actualizado');
+}
+
+function closeViewModal(){
+  document.getElementById('viewModal').classList.remove('active');
+  selectedId=null;
+}
+
+function deleteExercise(){
+  if(!selectedId) return;
+  for(const date in allExercises){
+    allExercises[date]=allExercises[date].filter(e=>e.id!==selectedId);
+  }
+  syncCalendarDataToUser();
+  closeViewModal();
+  renderCalendar();
+  showNotif('🗑️ Ejercicio eliminado');
+}
+
+function openEditDay(dateStr){
+  currentEditDate=dateStr;
+  const dateObj=new Date(dateStr);
+  document.getElementById('editDayTitle').textContent='📅 '+dateObj.toLocaleDateString('es-ES');
+  
+  const exes=allExercises[dateStr]||[];
+  const isRest=restDays.includes(dateStr);
+  
+  let content='';
+  if(isRest){
+    content='<p style="color:var(--purple); text-align:center; font-weight:700; padding:20px;">🛌 DÍA DE DESCANSO</p>';
+  } else {
+    if(exes.length>0){
+      content+=exes.map(e=>`
+        <div style="background:rgba(0,255,200,0.1); padding:10px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="flex:1;">
+            <p style="margin:0; color:var(--neon); font-weight:600;">${e.name}</p>
+            <p style="margin:4px 0 0 0; font-size:11px; color:#999;">${e.sets} • ${e.muscle}</p>
+          </div>
+          <button style="background:rgba(255,50,50,0.2); color:#ff6b6b; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:11px; font-weight:600;" onclick="deleteExerciseFromDay('${e.id}')">✕</button>
+        </div>
+      `).join('');
+    } else {
+      content='<p style="color:#999; text-align:center; font-size:12px;">Sin ejercicios programados</p>';
+    }
+  }
+  
+  document.getElementById('editDayExercises').innerHTML=content;
+  document.getElementById('editDayModal').classList.add('active');
+}
+
+function closeEditDayModal(){
+  document.getElementById('editDayModal').classList.remove('active');
+  currentEditDate=null;
+}
+
+function deleteExerciseFromDay(id){
+  if(!currentEditDate) return;
+  allExercises[currentEditDate]=allExercises[currentEditDate].filter(e=>e.id!==id);
+  syncCalendarDataToUser();
+  openEditDay(currentEditDate);
+  renderCalendar();
+}
+
+function toggleRestFromEditDay(){
+  if(!currentEditDate) return;
+  if(restDays.includes(currentEditDate)){
+    restDays=restDays.filter(d=>d!==currentEditDate);
+    showNotif('✅ Disponible para entrenar');
+  } else {
+    allExercises[currentEditDate]=[];
+    restDays.push(currentEditDate);
+    showNotif('🛌 Marcado como descanso');
+  }
+  syncCalendarDataToUser();
+  openEditDay(currentEditDate);
+  renderCalendar();
+}
+
+function openAddFromEditDay(){
+  closeEditDayModal();
+  openAdd(currentEditDate);
+}
+
+function toggleRest(dateStr){
+  if(restDays.includes(dateStr)){
+    restDays=restDays.filter(d=>d!==dateStr);
+    showNotif('✅ Disponible para entrenar');
+  } else {
+    restDays.push(dateStr);
+    showNotif('🛌 Marcado como descanso');
+  }
+  syncCalendarDataToUser();
+  renderCalendar();
+}
+
+function updateStats(){
+  const start=new Date();
+  start.setDate(start.getDate()-start.getDay());
+  let exCount=0,restCount=0,setCount=0;
+  const muscles=new Set();
+  
+  for(let i=0;i<7;i++){
+    const d=new Date(start);
+    d.setDate(d.getDate()+i);
+    const ds=getDateString(d);
+    
+    if(restDays.includes(ds)) restCount++;
+    if(allExercises[ds]){
+      allExercises[ds].forEach(e=>{
+        exCount++;
+        muscles.add(e.muscle);
+        setCount+=parseInt(e.sets.split('x')[0])||0;
+      });
+    }
+  }
+  
+  document.getElementById('statExercises').textContent=exCount;
+  document.getElementById('statRest').textContent=restCount;
+  document.getElementById('statSets').textContent=setCount;
+  document.getElementById('statMuscle').textContent=muscles.size;
+}
+
+function showNotif(msg){
+  const n=document.getElementById('notif');
+  n.textContent=msg;
+  n.style.display='block';
+  setTimeout(()=>n.style.display='none',3000);
+}
+
+function prevMonth(){
+  currentDate.setMonth(currentDate.getMonth()-1);
+  renderCalendar();
+}
+
+function nextMonth(){
+  currentDate.setMonth(currentDate.getMonth()+1);
+  renderCalendar();
+}
+
+function todayMonth(){
+  currentDate=new Date();
+  renderCalendar();
+}
+</script>
+
+</body>
+</html>

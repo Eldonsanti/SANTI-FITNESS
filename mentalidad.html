@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANTI FITNESS • Mentalidad</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
+<script src="assets/js/auth.js"></script>
+<style>
+:root{--neon:#00ffc8; --gold:#d4af37; --purple:#c44dff; --pink:#ff6b9d; --cyan:#00d4ff;}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Montserrat',sans-serif; background:linear-gradient(180deg, #000 0%, #0f2027 50%, #001a33 100%); color:white; min-height:100vh;}
+header{position:sticky; top:0; z-index:50; padding:20px; background:linear-gradient(135deg, #0a0a0a, #1a1a1a); box-shadow:0 0 50px rgba(0, 255, 200, 0.3); display:flex; justify-content:space-between; align-items:center;}
+header h1{margin:0; font-size:32px; letter-spacing:3px;}
+header span{color:var(--neon);}
+#headerRight{display:flex; gap:15px; flex-wrap:wrap; align-items:center;}
+.nav-btn{padding:10px 16px; border-radius:8px; border:1px solid var(--neon); background:rgba(0, 255, 200, 0.1); color:white; cursor:pointer; font-weight:600; transition:all 0.3s; font-size:12px;}
+.nav-btn:hover{background:rgba(0, 255, 200, 0.2);}
+.container{max-width:1200px; margin:30px auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:25px; padding:0 15px;}
+.card{background:linear-gradient(135deg, rgba(20, 30, 40, 0.9), rgba(10, 10, 20, 0.95)); border-radius:14px; padding:25px; box-shadow:0 8px 32px rgba(0, 255, 200, 0.1); border:1px solid rgba(0, 255, 200, 0.15);}
+.card h2{color:var(--neon); font-size:22px; margin-bottom:15px;}
+.quote{background:linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(196, 77, 255, 0.1)); border-left:4px solid var(--gold); padding:15px; border-radius:8px; margin:15px 0; font-style:italic; font-size:14px; line-height:1.6; color:#e0e0e0;}
+button{background:linear-gradient(135deg, var(--neon), #00d4ff); border:none; border-radius:8px; padding:11px 20px; font-weight:600; cursor:pointer; color:black; font-size:13px; width:100%;}
+button:hover{transform:translateY(-2px); box-shadow:0 6px 16px rgba(0, 255, 200, 0.4);}
+input, textarea{width:100%; padding:11px; border-radius:8px; border:1px solid rgba(0, 255, 200, 0.2); background:rgba(10, 10, 20, 0.8); color:white; font-family:inherit; margin-bottom:10px; font-size:13px;}
+input:focus, textarea:focus{outline:none; border-color:var(--neon); box-shadow:0 0 20px rgba(0, 255, 200, 0.3);}
+.timer-display{font-size:48px; font-weight:800; text-align:center; color:var(--neon); margin:20px 0;}
+.item-list{display:flex; flex-direction:column; gap:10px; margin-top:15px; max-height:300px; overflow-y:auto;}
+.item{background:rgba(0, 255, 200, 0.05); border:1px solid rgba(0, 255, 200, 0.2); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;}
+.item-name{flex:1; font-weight:600; color:var(--cyan);}
+.item-del{background:rgba(255, 0, 0, 0.2); color:var(--pink); border:none; padding:6px 12px; font-size:11px; cursor:pointer; border-radius:4px;}
+.notif{position:fixed; top:20px; right:20px; background:linear-gradient(135deg, var(--neon), #00d4ff); color:black; padding:16px 24px; border-radius:10px; font-weight:600; z-index:300; display:none;}
+.tips-box{background:rgba(0, 255, 200, 0.05); border:1px solid rgba(0, 255, 200, 0.2); border-radius:8px; padding:15px; margin:10px 0; font-size:13px;}
+.tips-box strong{color:var(--neon);}
+@media(max-width:768px){.container{grid-template-columns:1fr;} header h1{font-size:24px;} .timer-display{font-size:36px;}}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>SANTI</span> FITNESS • MENTALIDAD</h1>
+  <div id="headerRight"></div>
+</header>
+
+<div class="container">
+  <div class="card" style="grid-column:1/-1;">
+    <h2>✨ Inspiración del Día</h2>
+    <div class="quote" id="dailyQuote">Cargando cita...</div>
+    <button onclick="nextQuote()" style="margin-top:10px;">💡 Siguiente Cita</button>
+  </div>
+
+  <div class="card">
+    <h2>😴 Temporizador de Descanso</h2>
+    <input type="number" id="restMinutes" placeholder="Minutos" min="1" max="120" value="10">
+    <div class="timer-display" id="timerDisplay">00:00</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+      <button style="font-size:12px;" onclick="startRest()">▶️ Iniciar</button>
+      <button style="font-size:12px;" onclick="pauseRest()">⏸️ Pausar</button>
+      <button style="font-size:12px;" onclick="resetRest()">🔄 Reset</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🗣️ Mis Mantras</h2>
+    <textarea id="mantraText" placeholder="Tu mantra personal..." rows="3"></textarea>
+    <button onclick="saveMantra()">💾 Guardar Mantra</button>
+    <div class="item-list" id="mantraList"></div>
+  </div>
+
+  <div class="card">
+    <h2>📋 Hábitos Diarios</h2>
+    <input type="text" id="habitName" placeholder="Nuevo hábito (Ej: Meditar 10min)">
+    <button onclick="addHabit()">✅ Agregar Hábito</button>
+    <div class="item-list" id="habitList"></div>
+  </div>
+
+  <div class="card" style="grid-column:1/-1;">
+    <h2>🧠 Consejos para Fortalecer la Mentalidad</h2>
+    <div class="tips-box">
+      <strong>🔥 Disciplina > Motivación</strong><br>
+      La disciplina es hacer lo que debes, incluso cuando no quieres. La motivación es un lujo, pero la disciplina es un hábito.
+    </div>
+    <div class="tips-box">
+      <strong>🎯 Pequeños Pasos = Grandes Cambios</strong><br>
+      No necesitas cambiar tu vida de la noche a la mañana. Pequeños pasos consistentes generan transformaciones duraderas.
+    </div>
+    <div class="tips-box">
+      <strong>💪 Mentalidad de Crecimiento</strong><br>
+      No digas "No puedo", di "Aún no". Cada fracaso es una lección, no una derrota. El esfuerzo es lo que te hace fuerte.
+    </div>
+  </div>
+</div>
+
+<div id="notif" class="notif"></div>
+
+<script src="assets/js/dashboard.js"></script>
+<script>
+const quotes = [
+  "El éxito es ir de fracaso en fracaso sin perder la esperanza. - Churchill",
+  "La única forma de hacer un gran trabajo es amar lo que haces. - Steve Jobs",
+  "No importa si eres rápido o lento, lo importante es que no dejes de avanzar.",
+  "Tu cuerpo puede soportar lo que tu mente cree que puede.",
+  "La disciplina es elegir lo que quieres más sobre lo que quieres ahora.",
+  "El camino a mil kilómetros comienza con un solo paso.",
+  "No busques ser mejor que los demás, busca ser mejor que quien eras ayer.",
+  "El dolor es temporal, pero el orgullo dura para siempre.",
+  "La consistencia es la clave del éxito.",
+  "Cada entrenamiento es una oportunidad de ser mejor."
+];
+
+let mantras = [];
+let habits = [];
+let timerInterval = null;
+let timerSeconds = 0;
+
+function loadMentalityData() {
+  if (!isAuthenticated()) {
+    location.href = 'index.html';
+    return;
+  }
+  
+  const savedData = getMentalityData();
+  if (savedData) {
+    mantras = savedData.mantras || [];
+    habits = savedData.habits || [];
+  } else {
+    // Cargar datos antiguos si existen (para compatibilidad)
+    mantras = JSON.parse(localStorage.getItem('mantras')) || [];
+    habits = JSON.parse(localStorage.getItem('habits')) || [];
+  }
+}
+
+function syncMentalityDataToUser() {
+  if (!isAuthenticated()) return;
+  
+  const mentalityDataObj = {
+    mantras: mantras,
+    habits: habits,
+    savedDate: new Date().toISOString()
+  };
+  
+  // Llamar a la función global de dashboard.js
+  saveMentalityData(mentalityDataObj);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    loadMentalityData();
+    showDailyQuote();
+    renderMantras();
+    renderHabits();
+  }, 500);
+});
+
+function showDailyQuote(){
+  const today = new Date().toDateString();
+  const lastDate = localStorage.getItem(`quoteDate_${currentUser?.username || 'guest'}`);
+  
+  if(lastDate !== today){
+    const randomIdx = Math.floor(Math.random() * quotes.length);
+    localStorage.setItem(`quoteDate_${currentUser?.username || 'guest'}`, today);
+    localStorage.setItem(`currentQuote_${currentUser?.username || 'guest'}`, randomIdx);
+  }
+  
+  nextQuote();
+}
+
+function nextQuote(){
+  let idx = parseInt(localStorage.getItem(`currentQuote_${currentUser?.username || 'guest'}`) || 0);
+  idx = (idx + 1) % quotes.length;
+  localStorage.setItem(`currentQuote_${currentUser?.username || 'guest'}`, idx);
+  document.getElementById('dailyQuote').textContent = '"' + quotes[idx] + '"';
+}
+
+function startRest(){
+  if(timerInterval) return;
+  
+  const mins = parseInt(document.getElementById('restMinutes').value);
+  if(!mins || mins < 1){
+    alert('Ingresa minutos válidos');
+    return;
+  }
+  
+  timerSeconds = mins * 60;
+  timerInterval = setInterval(() => {
+    timerSeconds--;
+    updateTimerDisplay();
+    
+    if(timerSeconds <= 0){
+      clearInterval(timerInterval);
+      timerInterval = null;
+      showNotif('⏰ ¡Descanso completado!');
+    }
+  }, 1000);
+}
+
+function pauseRest(){
+  if(timerInterval){
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+function resetRest(){
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerSeconds = 0;
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay(){
+  const mins = Math.floor(timerSeconds / 60);
+  const secs = timerSeconds % 60;
+  document.getElementById('timerDisplay').textContent = 
+    String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+}
+
+function saveMantra(){
+  const text = document.getElementById('mantraText').value;
+  if(!text){
+    alert('Escribe un mantra');
+    return;
+  }
+  
+  mantras.push({text, date: new Date().toLocaleDateString('es-ES')});
+  syncMentalityDataToUser();
+  document.getElementById('mantraText').value = '';
+  renderMantras();
+  showNotif('💾 Mantra guardado');
+}
+
+function renderMantras(){
+  const list = document.getElementById('mantraList');
+  list.innerHTML = '';
+  
+  mantras.forEach((m, idx) => {
+    list.innerHTML += `
+      <div class="item">
+        <div style="flex:1;">
+          <div style="color:var(--cyan); font-size:13px;">"${m.text}"</div>
+          <div style="font-size:11px; color:#999;">${m.date}</div>
+        </div>
+        <button class="item-del" onclick="delMantra(${idx})">✕</button>
+      </div>
+    `;
+  });
+}
+
+function delMantra(idx){
+  mantras.splice(idx, 1);
+  syncMentalityDataToUser();
+  renderMantras();
+}
+
+function addHabit(){
+  const name = document.getElementById('habitName').value;
+  if(!name){
+    alert('Escribe un hábito');
+    return;
+  }
+  
+  habits.push({name, date: new Date().toLocaleDateString('es-ES'), completed: false});
+  syncMentalityDataToUser();
+  document.getElementById('habitName').value = '';
+  renderHabits();
+  showNotif('✅ Hábito agregado');
+}
+
+function renderHabits(){
+  const list = document.getElementById('habitList');
+  list.innerHTML = '';
+  
+  habits.forEach((h, idx) => {
+    list.innerHTML += `
+      <div class="item">
+        <div style="flex:1;">
+          <div style="color:var(--cyan);">${h.name}</div>
+          <div style="font-size:11px; color:#999;">${h.date}</div>
+        </div>
+        <button class="item-del" onclick="delHabit(${idx})">✕</button>
+      </div>
+    `;
+  });
+}
+
+function delHabit(idx){
+  habits.splice(idx, 1);
+  syncMentalityDataToUser();
+  renderHabits();
+}
+
+function showNotif(msg){
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.style.display = 'block';
+  setTimeout(() => n.style.display = 'none', 2500);
+}
+</script>
+</body>
+</html>

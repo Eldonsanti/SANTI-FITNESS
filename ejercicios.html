@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SANTI FITNESS • Ejercicios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
+  <script src="assets/js/auth.js"></script>
+  <style>
+    :root {--neon: #00ffc8; --gold: #d4af37; --cyan: #00d4ff; --purple: #c44dff; --pink: #ff6b9d;}
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {background: linear-gradient(180deg, #000 0%, #0f2027 50%, #001a33 100%); color: white; font-family: 'Montserrat', sans-serif; min-height: 100vh; overflow-x: hidden;}
+    header {position: sticky; top: 0; z-index: 50; padding: 20px; background: linear-gradient(135deg, #0a0a0a, #1a1a1a); box-shadow: 0 0 50px rgba(0, 255, 200, 0.3); display: flex; justify-content: space-between; align-items: center;}
+    header h1 {margin: 0; font-size: 32px; letter-spacing: 3px;}
+    header span {color: var(--neon); text-shadow: 0 0 15px rgba(0, 255, 200, 0.8);}
+    #headerRight {display: flex; gap: 15px; align-items: center;}
+    .nav-btn {padding: 10px 16px; border-radius: 8px; border: 1px solid var(--neon); background: rgba(0, 255, 200, 0.1); color: white; cursor: pointer; font-weight: 600; transition: all 0.3s; font-size: 12px;}
+    .nav-btn:hover {background: rgba(0, 255, 200, 0.2); transform: translateY(-2px);}
+    .container {max-width: 1200px; margin: 30px auto; padding: 0 15px;}
+    .filters {display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; justify-content: center;}
+    .filter-btn {padding: 10px 20px; border: 2px solid rgba(0, 255, 200, 0.3); background: rgba(0, 255, 200, 0.05); color: var(--neon); border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; font-size: 13px;}
+    .filter-btn.active {background: linear-gradient(135deg, var(--neon), var(--cyan)); border-color: var(--neon); color: black; box-shadow: 0 0 20px rgba(0, 255, 200, 0.5); font-weight: 800;}
+    .grid {display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin: 30px 0;}
+    .exercise-card {background: linear-gradient(135deg, rgba(20, 30, 40, 0.8), rgba(10, 10, 20, 0.95)); border: 1px solid rgba(0, 255, 200, 0.15); border-radius: 14px; overflow: hidden; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);}
+    .exercise-card:hover {transform: translateY(-8px); box-shadow: 0 12px 40px rgba(0, 255, 200, 0.2); border-color: rgba(0, 255, 200, 0.4);}
+    .exercise-card img {width: 100%; height: 180px; object-fit: cover;}
+    .exercise-card-content {padding: 18px; flex-grow: 1; display: flex; flex-direction: column;}
+    .exercise-card h3 {color: var(--neon); margin-bottom: 10px; font-size: 1.1em; font-weight: 700;}
+    .exercise-card .muscle {color: var(--neon); font-weight: 600; font-size: 12px; margin-bottom: 6px; opacity: 0.9;}
+    .exercise-card .info {color: rgba(255, 255, 255, 0.8); font-size: 13px; flex-grow: 1; margin-bottom: 12px; line-height: 1.5;}
+    .fav-btn {align-self: flex-end; background: none; border: none; color: var(--neon); font-size: 1.5em; cursor: pointer; transition: all 0.3s;}
+    .fav-btn:hover {transform: scale(1.2);}
+    .modal {position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.92); display: none; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(5px); z-index: 200;}
+    .modal.active {display: flex; opacity: 1; pointer-events: auto;}
+    .modal-content {background: linear-gradient(135deg, rgba(20, 30, 40, 0.98), rgba(10, 10, 20, 0.98)); padding: 30px; border-radius: 18px; max-width: 500px; width: 90%; border: 1px solid rgba(0, 255, 200, 0.2); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8); max-height: 85vh; overflow-y: auto; position: relative;}
+    .close-modal {position: absolute; top: 15px; right: 15px; background: linear-gradient(135deg, #ff3333, #ff0000); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; transition: all 0.3s;}
+    .modal-img {width: 100%; height: 280px; object-fit: cover; border-radius: 12px; margin: 20px 0 15px 0;}
+    .modal h2 {color: var(--neon); margin: 0 0 15px 0; font-size: 24px; margin-top: 30px;}
+    .modal p {color: rgba(255, 255, 255, 0.9); margin: 12px 0; line-height: 1.6; font-size: 14px;}
+    .modal-info {background: rgba(0, 255, 200, 0.1); padding: 15px; border-left: 4px solid var(--neon); border-radius: 8px; margin: 15px 0; font-size: 13px;}
+    .form-g {margin: 15px 0;}
+    .form-g label {display: block; color: var(--neon); font-weight: 600; margin-bottom: 8px; font-size: 13px;}
+    .form-g input {width: 100%; padding: 11px; border-radius: 8px; border: 1px solid rgba(0, 255, 200, 0.2); background: rgba(10, 10, 20, 0.8); color: white; font-family: inherit; font-size: 13px;}
+    .form-g input:focus {outline: none; border-color: var(--neon); box-shadow: 0 0 20px rgba(0, 255, 200, 0.3);}
+    .modal-btns {display: flex; gap: 12px; margin-top: 20px;}
+    .modal-btns button {flex: 1; padding: 11px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 13px;}
+    .btn-save {background: linear-gradient(135deg, var(--neon), #00c8ff); color: black;}
+    .btn-cancel {background: rgba(0, 255, 200, 0.1); color: white; border: 1px solid rgba(0, 255, 200, 0.2);}
+    .notif {position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, var(--neon), #00c8ff); color: black; padding: 16px 24px; border-radius: 10px; font-weight: 600; z-index: 300; box-shadow: 0 8px 24px rgba(0, 255, 200, 0.4); animation: slideIn 0.4s ease; display: none;}
+    @keyframes slideIn {from {transform: translateX(400px); opacity: 0;} to {transform: translateX(0); opacity: 1;}}
+    .notif.show {display: block;}
+    @media (max-width: 768px) {.grid {grid-template-columns: 1fr;} header h1 {font-size: 1.8em;} .modal-content {width: 95%;}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1><span>SANTI</span> FITNESS • EJERCICIOS</h1>
+    <div id="headerRight"></div>
+  </header>
+  <div class="filters" id="filters"></div>
+  <div style="margin-bottom:20px; text-align: center;">
+    <button class="nav-header" id="showFavsBtn" onclick="toggleFavs()" style="margin-right:10px;">❤️ Ver Favoritos</button>
+    <span id="favCount" style="color:var(--neon); font-weight:600;"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeModal()">✕</button>
+    <img id="modalImg" class="modal-img" src="" alt="">
+    <h2 id="modalName"></h2>
+    <p id="modalInfo"></p>
+    <div class="modal-info" id="modalDetails"></div>
+    <div class="form-g">
+      <label>📅 Selecciona una fecha para añadir al calendario:</label>
+      <input type="date" id="exerciseDate">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-save" onclick="addToCalendar()">✅ Agregar al Calendario</button>
+      <button class="btn-cancel" onclick="closeModal()">✕ Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div id="notif" class="notif"></div>
+
+<script>
+const exercises = [
+  // PECHO
+  {id: 1, name: 'Press de banca con barra', muscle: 'Pecho', level: 'Principiante', info: 'Ejercicio compuesto para pectoral, hombro y tríceps.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif', secondaryMuscles: ['Tríceps', 'Hombro'], type: 'Compuesto'},
+  {id: 2, name: 'Press inclinado con mancuernas', muscle: 'Pecho', level: 'Intermedio', info: 'Trabaja el pectoral superior.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Dumbbell-Press.gif', secondaryMuscles: ['Tríceps', 'Hombro'], type: 'Compuesto'},
+  {id: 12, name: 'Press declinado con barra', muscle: 'Pecho', level: 'Intermedio', info: 'Enfocado en pectoral inferior.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/03/Decline-Barbell-Bench-Press.gif', secondaryMuscles: ['Tríceps', 'Hombro'], type: 'Compuesto'},
+  {id: 13, name: 'Aperturas con mancuernas', muscle: 'Pecho', level: 'Intermedio', info: 'Aísla el pectoral.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Fly.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 14, name: 'Flexiones', muscle: 'Pecho', level: 'Principiante', info: 'Peso corporal, trabaja pectoral, tríceps y hombro.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Push-Up.gif', secondaryMuscles: ['Tríceps', 'Hombro'], type: 'Compuesto'},
+  {id: 15, name: 'Press con mancuernas', muscle: 'Pecho', level: 'Intermedio', info: 'Variante con mancuernas para pectoral.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Press.gif', secondaryMuscles: ['Tríceps', 'Hombro'], type: 'Compuesto'},
+  {id: 16, name: 'Pullover', muscle: 'Pecho', level: 'Avanzado', info: 'Trabaja pectoral y dorsal.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Pullover.gif', secondaryMuscles: ['Dorsal'], type: 'Compuesto'},
+
+  // ESPALDA  
+  {id: 3, name: 'Dominadas', muscle: 'Espalda', level: 'Avanzado', info: 'Peso corporal, dorsal y bíceps.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pull-up.gif', secondaryMuscles: ['Bíceps', 'Trapecio'], type: 'Compuesto'},
+  {id: 4, name: 'Remo con barra', muscle: 'Espalda', level: 'Intermedio', info: 'Remo para espalda media.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bent-Over-Row.gif', secondaryMuscles: ['Bíceps', 'Lumbares'], type: 'Compuesto'},
+  {id: 8, name: 'Peso muerto', muscle: 'Espalda', level: 'Avanzado', info: 'Trabaja espalda baja y glúteos.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Deadlift.gif', secondaryMuscles: ['Glúteo', 'Femoral'], type: 'Compuesto'},
+  {id: 11, name: 'Remo en máquina', muscle: 'Espalda', level: 'Principiante', info: 'Remo seguro en máquina.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/08/Reverse-Grip-Machine-Row.gif', secondaryMuscles: ['Bíceps'], type: 'Compuesto'},
+  {id: 17, name: 'Remo con mancuerna', muscle: 'Espalda', level: 'Intermedio', info: 'Remo unilateral para espalda.', img: 'https://fitnessprogramer.com/wp-content/uploads/2022/12/One-Arm-Dumbbell-Upright-Row.gif', secondaryMuscles: ['Bíceps'], type: 'Compuesto'},
+  {id: 18, name: 'Jalón al pecho', muscle: 'Espalda', level: 'Principiante', info: 'Polea alta para dorsal.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif', secondaryMuscles: ['Bíceps'], type: 'Compuesto'},
+  // HOMBRO
+  {id: 5, name: 'Press militar', muscle: 'Hombro', level: 'Intermedio', info: 'Press de hombro con barra.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Shoulder-Press.gif', secondaryMuscles: ['Tríceps'], type: 'Compuesto'},
+  {id: 10, name: 'Elevaciones laterales con mancuernas', muscle: 'Hombro', level: 'Principiante', info: 'Aísla deltoides lateral.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 19, name: 'Press Arnold', muscle: 'Hombro', level: 'Avanzado', info: 'Variante completa para hombro.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Arnold-Press.gif', secondaryMuscles: ['Tríceps'], type: 'Compuesto'},
+  {id: 20, name: 'Elevación frontal', muscle: 'Hombro', level: 'Principiante', info: 'Aísla deltoides anterior.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Front-Raise.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 21, name: 'Pájaros', muscle: 'Hombro', level: 'Intermedio', info: 'Aísla deltoides posterior.', img: 'https://www.inspireusafoundation.org/file/2022/04/seated-reverse-fly.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 22, name: 'Face pull', muscle: 'Hombro', level: 'Intermedio', info: 'Deltoides posterior y trapecio.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Face-Pull.gif', secondaryMuscles: ['Trapecio'], type: 'Compuesto'},
+  // BÍCEPS
+  {id: 6, name: 'Curl con barra', muscle: 'Bíceps', level: 'Principiante', info: 'Aísla bíceps.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Curl.gif', secondaryMuscles: ['Antebrazo'], type: 'Aislado'},
+  {id: 23, name: 'Curl alterno con mancuernas', muscle: 'Bíceps', level: 'Principiante', info: 'Aísla bíceps.', img: 'https://fitnessprogramer.com/wp-content/uploads/2022/06/Seated-dumbbell-alternating-curl.gif', secondaryMuscles: ['Antebrazo'], type: 'Aislado'},
+  {id: 24, name: 'Curl martillo', muscle: 'Bíceps', level: 'Intermedio', info: 'Trabaja braquial y antebrazo.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Hammer-Curl.gif', secondaryMuscles: ['Antebrazo'], type: 'Aislado'},
+  {id: 25, name: 'Curl en banco Scott', muscle: 'Bíceps', level: 'Intermedio', info: 'Aísla bíceps braquial.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Z-Bar-Preacher-Curl.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 26, name: 'Curl concentrado', muscle: 'Bíceps', level: 'Avanzado', info: 'Aislamiento máximo.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Concentration-Curl.gif', secondaryMuscles: [], type: 'Aislado'},
+  // PIERNA
+  {id: 7, name: 'Sentadilla', muscle: 'Pierna', level: 'Principiante', info: 'Cuádriceps y glúteos.', img: 'https://fitnessprogramer.com/wp-content/uploads/2023/01/Dumbbell-Goblet-Squat.gif', secondaryMuscles: ['Glúteo', 'Femoral'], type: 'Compuesto'},
+  {id: 27, name: 'Sentadilla frontal', muscle: 'Pierna', level: 'Avanzado', info: 'Cuádriceps.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/06/front-squat.gif', secondaryMuscles: ['Glúteo'], type: 'Compuesto'},
+  {id: 28, name: 'Sentadilla hack', muscle: 'Pierna', level: 'Avanzado', info: 'Cuádriceps.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Sled-Hack-Squat.gif', secondaryMuscles: ['Glúteo'], type: 'Compuesto'},
+  {id: 29, name: 'Zancadas', muscle: 'Pierna', level: 'Intermedio', info: 'Glúteos y cuádriceps.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lunge.gif', secondaryMuscles: ['Glúteo'], type: 'Compuesto'},
+  {id: 30, name: 'Prensa de piernas', muscle: 'Pierna', level: 'Intermedio', info: 'Cuádriceps y glúteos.', img: 'https://fitnessprogramer.com/wp-content/uploads/2015/11/Leg-Press.gif', secondaryMuscles: ['Glúteo'], type: 'Compuesto'},
+  {id: 31, name: 'Peso muerto rumano', muscle: 'Pierna', level: 'Intermedio', info: 'Femorales y glúteos.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Romanian-Deadlift.gif', secondaryMuscles: ['Glúteo'], type: 'Compuesto'},
+  {id: 32, name: 'Peso muerto piernas rígidas', muscle: 'Pierna', level: 'Avanzado', info: 'Femorales.', img: 'https://fitnessprogramer.com/wp-content/uploads/2022/01/Stiff-Leg-Deadlift.gif', secondaryMuscles: ['Glúteo'], type: 'Compuesto'},
+  {id: 33, name: 'Elevación de talones', muscle: 'Pierna', level: 'Principiante', info: 'Gemelos.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Calf-Raise.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 34, name: 'Curl femoral', muscle: 'Pierna', level: 'Intermedio', info: 'Femorales.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Leg-Curl.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 35, name: 'Extensión de cuádriceps', muscle: 'Pierna', level: 'Principiante', info: 'Cuádriceps.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/LEG-EXTENSION.gif', secondaryMuscles: [], type: 'Aislado'},
+  // TRÍCEPS
+  {id: 9, name: 'Extensiones de tríceps en polea', muscle: 'Tríceps', level: 'Principiante', info: 'Aísla tríceps.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pushdown.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 36, name: 'Fondos en paralelas', muscle: 'Tríceps', level: 'Avanzado', info: 'Tríceps y pecho.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/06/Chest-Dips.gif', secondaryMuscles: ['Pecho'], type: 'Compuesto'},
+  {id: 37, name: 'Extensión de tríceps en polea', muscle: 'Tríceps', level: 'Principiante', info: 'Aísla tríceps.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pushdown.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 38, name: 'Rompecráneos', muscle: 'Tríceps', level: 'Avanzado', info: 'Tríceps intenso.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/06/Dumbbell-Skull-Crusher.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 39, name: 'Patada de tríceps', muscle: 'Tríceps', level: 'Principiante', info: 'Tríceps posterior.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Kickback.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 40, name: 'Press francés', muscle: 'Tríceps', level: 'Intermedio', info: 'Tríceps largo.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Triceps-Extension.gif', secondaryMuscles: [], type: 'Aislado'},
+  {id: 41, name: 'Extensión de tríceps por encima de la cabeza', muscle: 'Tríceps', level: 'Intermedio', info: 'Tríceps largo.', img: 'https://fitnessprogramer.com/wp-content/uploads/2021/06/High-Pulley-Overhead-Tricep-Extension.gif', secondaryMuscles: [], type: 'Aislado'},
+];
+
+let currentExercise = null;
+let showFavs = false;
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderMuscles();
+  renderExercises(exercises);
+  updateFavCount();
+});
+
+function renderMuscles(){
+  const muscles=[...new Set(exercises.map(e=>e.muscle))];
+  const filters=document.getElementById('filters');
+  filters.innerHTML=`<button class="filter-btn active" onclick="filterByMuscle('Todos', this)">Todos</button>`;
+  muscles.forEach(m=>{
+    filters.innerHTML+=`<button class="filter-btn" onclick="filterByMuscle('${m}', this)">${m}</button>`;
+  });
+}
+
+function filterByMuscle(muscle, btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(muscle==='Todos'){
+    renderExercises(exercises);
+  } else {
+    renderExercises(exercises.filter(e=>e.muscle===muscle));
+  }
+}
+
+function renderExercises(list){
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  list.forEach(ex=>{
+    const card=document.createElement('div');
+    card.className='exercise-card';
+    const isFav=JSON.parse(localStorage.getItem('favs') || '[]').includes(ex.id);
+    card.innerHTML=`
+      <img src="${ex.img}" alt="${ex.name}" onclick="openModal(${ex.id})">
+      <div class="exercise-card-content">
+        <h3>${ex.name}</h3>
+        <div class="muscle">💪 ${ex.muscle}</div>
+        <p class="info">${ex.info}</p>
+        <button class="fav-btn ${isFav?'favorited':''}" onclick="toggleFav(${ex.id}, event)">❤️</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openModal(id){
+  const ex=exercises.find(e=>e.id===id);
+  currentExercise=ex;
+  document.getElementById('modalImg').src=ex.img;
+  document.getElementById('modalName').textContent=ex.name;
+  document.getElementById('modalInfo').textContent=ex.info;
+  let details=`<label>Nivel:</label> ${ex.level}<br>`;
+  details+=`<label>Tipo:</label> ${ex.type}<br>`;
+  if(ex.secondaryMuscles.length>0){
+    details+=`<label>Músculos secundarios:</label> ${ex.secondaryMuscles.join(', ')}<br>`;
+  }
+  document.getElementById('modalDetails').innerHTML=details;
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('exerciseDate').value = today;
+  document.getElementById('modal').classList.add('active');
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('active');
+}
+
+window.onclick=function(e){
+  const modal=document.getElementById('modal');
+  if(e.target===modal) modal.classList.remove('active');
+}
+
+function toggleFav(id, e){
+  e.stopPropagation();
+  let favs=JSON.parse(localStorage.getItem('favs') || '[]');
+  if(favs.includes(id)){
+    favs=favs.filter(f=>f!==id);
+  } else {
+    favs.push(id);
+  }
+  localStorage.setItem('favs', JSON.stringify(favs));
+  renderExercises(showFavs?exercises.filter(ex=>favs.includes(ex.id)):exercises);
+  updateFavCount();
+}
+
+function toggleFavs(){
+  showFavs=!showFavs;
+  const favs=JSON.parse(localStorage.getItem('favs') || '[]');
+  if(showFavs){
+    renderExercises(exercises.filter(ex=>favs.includes(ex.id)));
+    document.getElementById('showFavsBtn').textContent='❤️ Ver Todos';
+  } else {
+    renderExercises(exercises);
+    document.getElementById('showFavsBtn').textContent='❤️ Ver Favoritos';
+  }
+}
+
+function updateFavCount(){
+  const count=JSON.parse(localStorage.getItem('favs') || '[]').length;
+  document.getElementById('favCount').textContent=`${count} favorito${count!==1?'s':''}`;
+}
+
+function addToCalendar(){
+  if(!currentExercise) return;
+  const fecha = document.getElementById('exerciseDate').value;
+  if(!fecha) {
+    notify('❌ Selecciona una fecha');
+    return;
+  }
+  let allExercises = JSON.parse(localStorage.getItem('exeList') || '{}');
+  if(!allExercises[fecha]) allExercises[fecha] = [];
+  allExercises[fecha].push({
+    id: Date.now().toString(),
+    name: currentExercise.name,
+    muscle: currentExercise.muscle,
+    sets: currentExercise.sets || '3x10',
+    weight: currentExercise.weight || 'N/A',
+    notes: currentExercise.notes || '',
+    date: fecha
+  });
+  localStorage.setItem('exeList', JSON.stringify(allExercises));
+  const fechaFormato = new Date(fecha).toLocaleDateString('es-ES');
+  notify(`✅ ${currentExercise.name} agregado para ${fechaFormato}`);
+  closeModal();
+}
+
+function notify(msg){
+  const notif=document.getElementById('notif');
+  notif.textContent=msg;
+  notif.classList.add('show');
+  setTimeout(()=>notif.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>

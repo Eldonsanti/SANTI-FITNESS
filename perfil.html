@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANTI FITNESS • Perfil</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
+<script src="assets/js/auth.js"></script>
+<style>
+:root{--neon:#00ffc8; --gold:#d4af37; --purple:#c44dff; --pink:#ff6b9d; --cyan:#00d4ff;}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Montserrat',sans-serif; background:linear-gradient(180deg, #000 0%, #0f2027 50%, #001a33 100%); color:white; min-height:100vh;}
+header{position:sticky; top:0; z-index:50; padding:20px; background:linear-gradient(135deg, #0a0a0a, #1a1a1a); box-shadow:0 0 50px rgba(0, 255, 200, 0.3); display:flex; justify-content:space-between; align-items:center;}
+header h1{margin:0; font-size:32px; letter-spacing:3px;}
+header span{color:var(--neon);}
+.nav-btn{padding:10px 16px; border-radius:8px; border:1px solid var(--neon); background:rgba(0, 255, 200, 0.1); color:white; cursor:pointer; font-weight:600; transition:all 0.3s; font-size:12px;}
+.nav-btn:hover{background:rgba(0, 255, 200, 0.2);}
+.header-right{display:flex; gap:15px; flex-wrap:wrap;}
+.container{max-width:1100px; margin:30px auto; padding:0 15px;}
+.profile-header{background:linear-gradient(135deg, rgba(20, 30, 40, 0.9), rgba(10, 10, 20, 0.95)); border-radius:14px; padding:30px; box-shadow:0 8px 32px rgba(0, 255, 200, 0.1); border:1px solid rgba(0, 255, 200, 0.15); margin-bottom:30px; text-align:center;}
+.profile-header h2{color:var(--neon); font-size:28px; margin-bottom:10px;}
+.profile-header p{color:rgba(255, 255, 255, 0.7); font-size:14px;}
+.profile-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:25px; margin-bottom:30px;}
+.card{background:linear-gradient(135deg, rgba(20, 30, 40, 0.9), rgba(10, 10, 20, 0.95)); border-radius:14px; padding:25px; box-shadow:0 8px 32px rgba(0, 255, 200, 0.1); border:1px solid rgba(0, 255, 200, 0.15);}
+.card h3{color:var(--neon); font-size:18px; margin-bottom:15px; display:flex; align-items:center; gap:10px;}
+.form-group{margin-bottom:15px;}
+.form-group label{display:block; color:rgba(255, 255, 255, 0.7); font-size:12px; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;}
+input, select, textarea{width:100%; padding:11px; border-radius:8px; border:1px solid rgba(0, 255, 200, 0.2); background:rgba(10, 10, 20, 0.8); color:white; font-family:inherit; font-size:13px; transition:all 0.3s;}
+input:focus, select:focus, textarea:focus{outline:none; border-color:var(--neon); box-shadow:0 0 20px rgba(0, 255, 200, 0.3);}
+textarea{resize:vertical; min-height:80px;}
+.btn{padding:12px 20px; border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:13px; transition:all 0.3s; width:100%;}
+.btn-primary{background:linear-gradient(135deg, var(--neon), #00c8ff); color:black;}
+.btn-primary:hover{transform:translateY(-2px); box-shadow:0 6px 16px rgba(0, 255, 200, 0.6);}
+.btn-secondary{background:rgba(0, 255, 200, 0.1); color:white; border:1px solid rgba(0, 255, 200, 0.2);}
+.btn-secondary:hover{background:rgba(0, 255, 200, 0.2);}
+.btn-danger{background:rgba(255, 100, 100, 0.1); color:#ff6b9d; border:1px solid rgba(255, 100, 100, 0.2);}
+.btn-danger:hover{background:rgba(255, 100, 100, 0.2);}
+.stats-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:15px; margin:15px 0;}
+.stat-box{background:rgba(0, 255, 200, 0.05); border:1px solid rgba(0, 255, 200, 0.2); border-radius:8px; padding:15px; text-align:center;}
+.stat-value{font-size:24px; font-weight:800; color:var(--neon);}
+.stat-label{font-size:11px; color:#999; margin-top:5px; text-transform:uppercase;}
+.buttons-group{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;}
+.buttons-group.full{grid-template-columns:1fr;}
+.progress-history{max-height:300px; overflow-y:auto;}
+.history-item{background:rgba(0, 255, 200, 0.05); border-left:3px solid var(--neon); padding:12px; margin-bottom:10px; border-radius:4px; font-size:12px;}
+.history-item-date{color:var(--cyan); font-weight:600;}
+.history-item-data{color:rgba(255, 255, 255, 0.7); margin-top:3px;}
+.notif{position:fixed; top:20px; right:20px; background:linear-gradient(135deg, var(--neon), #00d4ff); color:black; padding:16px 24px; border-radius:10px; font-weight:600; z-index:300; display:none; box-shadow:0 8px 24px rgba(0, 255, 200, 0.4);}
+@media(max-width:768px){.profile-grid{grid-template-columns:1fr;} header h1{font-size:24px;} .buttons-group{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>SANTI</span> FITNESS • PERFIL</h1>
+  <div id="headerRight"></div>
+</header>
+
+<div class="container">
+  <div id="notAuth" style="display:none; text-align:center; padding:40px;">
+    <p style="font-size:18px; color:var(--neon); margin-bottom:20px;">⚠️ Debes iniciar sesión para acceder al perfil</p>
+    <button class="btn btn-primary" onclick="openLoginModal()" style="max-width:200px; margin:0 auto;">🔐 Iniciar Sesión</button>
+  </div>
+
+  <div id="authContent" style="display:none;">
+    <div class="profile-header">
+      <h2 id="profileTitle">👤 Mi Perfil</h2>
+      <p id="profileStatus" style="color:#00d4ff;"></p>
+    </div>
+
+    <!-- INFORMACIÓN PERSONAL -->
+    <div class="card">
+      <h3>👤 Información Personal</h3>
+      
+      <div class="form-group">
+        <label>Nombre</label>
+        <input type="text" id="userName" placeholder="Tu nombre completo">
+      </div>
+
+      <div class="form-group">
+        <label>Edad</label>
+        <input type="number" id="userAge" placeholder="Edad" min="15" max="120">
+      </div>
+
+      <div class="form-group">
+        <label>Género</label>
+        <select id="userGender">
+          <option value="">Selecciona género</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Femenino">Femenino</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Bio / Acerca de ti</label>
+        <textarea id="userBio" placeholder="Cuéntanos sobre ti..."></textarea>
+      </div>
+
+      <button class="btn btn-primary" onclick="savePersonalInfo()">💾 Guardar Información</button>
+    </div>
+
+    <!-- DATOS FÍSICOS -->
+    <div class="profile-grid">
+      <div class="card">
+        <h3>📊 Datos Físicos</h3>
+        
+        <div class="form-group">
+          <label>Altura (cm)</label>
+          <input type="number" id="userHeight" placeholder="170" step="0.1" min="100" max="250">
+        </div>
+
+        <div class="form-group">
+          <label>Peso Actual (kg)</label>
+          <input type="number" id="userWeight" placeholder="75" step="0.1" min="20" max="500">
+        </div>
+
+        <div class="form-group">
+          <label>Grasa Corporal (%)</label>
+          <input type="number" id="userFat" placeholder="15" step="0.1" min="0" max="100">
+        </div>
+
+        <button class="btn btn-primary" onclick="calculateStats()">📈 Calcular Estadísticas</button>
+
+        <div class="stats-grid" id="statsDisplay"></div>
+      </div>
+
+      <div class="card">
+        <h3>⚙️ Configuración de Entrenamiento</h3>
+        
+        <div class="form-group">
+          <label>Nivel de Entrenamiento</label>
+          <select id="workoutLevel">
+            <option value="">Selecciona nivel</option>
+            <option value="Principiante">Principiante (0-6 meses)</option>
+            <option value="Intermedio">Intermedio (6-12 meses)</option>
+            <option value="Avanzado">Avanzado (1-2+ años)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Objetivo Principal</label>
+          <select id="workoutGoal">
+            <option value="">Selecciona objetivo</option>
+            <option value="Ganancia Muscular">Ganancia Muscular</option>
+            <option value="Pérdida de Grasa">Pérdida de Grasa</option>
+            <option value="Mantenimiento">Mantenimiento</option>
+            <option value="Fuerza">Fuerza</option>
+            <option value="Resistencia">Resistencia</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Días de entrenamiento por semana</label>
+          <input type="number" id="daysPerWeek" placeholder="4" min="1" max="7">
+        </div>
+
+        <button class="btn btn-primary" onclick="saveTrainingConfig()">✅ Guardar Configuración</button>
+      </div>
+    </div>
+
+    <!-- HISTORIAL DE PROGRESO -->
+    <div class="card">
+      <h3>📈 Historial de Progreso</h3>
+      <p style="color:rgba(255, 255, 255, 0.6); font-size:12px; margin-bottom:15px;">Registra tu peso a lo largo del tiempo para ver tu evolución</p>
+      
+      <div class="form-group">
+        <label>Peso (kg)</label>
+        <input type="number" id="progressWeight" placeholder="75" step="0.1">
+      </div>
+
+      <div class="form-group">
+        <label>Notas</label>
+        <input type="text" id="progressNotes" placeholder="Ej: Bien, sensación fuerte hoy">
+      </div>
+
+      <button class="btn btn-primary" onclick="addProgressEntry()">➕ Registrar Peso</button>
+
+      <div class="progress-history" id="progressHistory"></div>
+    </div>
+
+    <!-- LOGROS Y ACHIEVEMENTS -->
+    <div class="card">
+      <h3>🏆 Mis Logros</h3>
+      <p style="color:rgba(255, 255, 255, 0.6); font-size:12px; margin-bottom:15px;">Desbloquea logros completando entrenamientos y cumpliendo objetivos</p>
+      <div id="achievementsSection"></div>
+      <button class="btn btn-primary" style="margin-top: 15px;" onclick="showAllAchievements()">📖 Ver Todos los Logros</button>
+    </div>
+
+    <!-- RESUMEN GENERAL -->
+    <div class="card">
+      <h3>📋 Resumen General</h3>
+      <div id="profileSummary" style="line-height:1.8; color:#ccc; font-size:13px;">
+        <p>Completa tu información para ver el resumen</p>
+      </div>
+    </div>
+
+    <!-- ACCIONES -->
+    <div class="card">
+      <h3>⚙️ Acciones de Cuenta</h3>
+      <div class="buttons-group full">
+        <button class="btn btn-danger" onclick="resetProfile()">🔄 Limpiar Datos</button>
+        <button class="btn btn-danger" onclick="if(confirm('¿Cerrar sesión?')) logout()">🚪 Cerrar Sesión</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="notif" class="notif"></div>
+
+<script>
+let userProfile = {};
+let progressHistory = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!isAuthenticated() && !isGuest) {
+    document.getElementById('notAuth').style.display = 'block';
+    document.getElementById('authContent').style.display = 'none';
+  } else {
+    document.getElementById('notAuth').style.display = 'none';
+    document.getElementById('authContent').style.display = 'block';
+    
+    loadProfileData();
+    updateProfileUI();
+    loadProgressHistory();
+    displayProgressHistory();
+    displayAchievements();
+  }
+});
+
+function loadProfileData() {
+  if (isAuthenticated()) {
+    userProfile = getUserProfile();
+    
+    document.getElementById('userName').value = userProfile.name || '';
+    document.getElementById('userAge').value = userProfile.age || '';
+    document.getElementById('userGender').value = userProfile.gender || '';
+    document.getElementById('userBio').value = userProfile.bio || '';
+    document.getElementById('userHeight').value = userProfile.height || '';
+    document.getElementById('userWeight').value = userProfile.weight || '';
+    document.getElementById('userFat').value = userProfile.fat || '';
+    document.getElementById('workoutLevel').value = userProfile.workoutLevel || '';
+    document.getElementById('workoutGoal').value = userProfile.workoutGoal || '';
+    document.getElementById('daysPerWeek').value = userProfile.daysPerWeek || '';
+
+    const user = getCurrentUser();
+    document.getElementById('profileStatus').textContent = `Sesión de: ${user.username}`;
+  }
+}
+
+function updateProfileUI() {
+  const user = getCurrentUser();
+  document.getElementById('profileTitle').textContent = `👤 ${user ? user.username : 'Mi Perfil'}`;
+}
+
+function savePersonalInfo() {
+  if (!isAuthenticated()) {
+    showNotif('Debes iniciar sesión');
+    return;
+  }
+
+  userProfile.name = document.getElementById('userName').value;
+  userProfile.age = parseInt(document.getElementById('userAge').value) || null;
+  userProfile.gender = document.getElementById('userGender').value;
+  userProfile.bio = document.getElementById('userBio').value;
+
+  saveUserProfile(userProfile);
+  updateSummary();
+  showNotif('✅ Información personal guardada');
+}
+
+function calculateStats() {
+  const height = parseFloat(document.getElementById('userHeight').value);
+  const weight = parseFloat(document.getElementById('userWeight').value);
+  const fat = parseFloat(document.getElementById('userFat').value);
+
+  if (!height || !weight) {
+    showNotif('Altura y peso requeridos');
+    return;
+  }
+
+  const bmi = (weight / ((height / 100) ** 2)).toFixed(1);
+  const lbm = weight * (1 - (fat / 100 || 0.15));
+
+  userProfile.height = height;
+  userProfile.weight = weight;
+  userProfile.fat = fat || 15;
+  userProfile.bmi = bmi;
+  userProfile.lbm = lbm.toFixed(1);
+
+  saveUserProfile(userProfile);
+
+  document.getElementById('statsDisplay').innerHTML = `
+    <div class="stat-box">
+      <div class="stat-label">IMC</div>
+      <div class="stat-value">${bmi}</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">MLG (kg)</div>
+      <div class="stat-value">${lbm.toFixed(1)}</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Grasa (kg)</div>
+      <div class="stat-value">${(weight - lbm).toFixed(1)}</div>
+    </div>
+  `;
+
+  updateSummary();
+  showNotif('📊 Estadísticas calculadas');
+}
+
+function saveTrainingConfig() {
+  if (!isAuthenticated()) {
+    showNotif('Debes iniciar sesión');
+    return;
+  }
+
+  const level = document.getElementById('workoutLevel').value;
+  const goal = document.getElementById('workoutGoal').value;
+  const days = parseInt(document.getElementById('daysPerWeek').value);
+
+  if (!level || !goal || !days) {
+    showNotif('Completa todos los campos');
+    return;
+  }
+
+  userProfile.workoutLevel = level;
+  userProfile.workoutGoal = goal;
+  userProfile.daysPerWeek = days;
+
+  saveUserProfile(userProfile);
+  updateSummary();
+  showNotif('⚙️ Configuración de entrenamiento guardada');
+}
+
+function addProgressEntry() {
+  if (!isAuthenticated()) {
+    showNotif('Debes iniciar sesión');
+    return;
+  }
+
+  const weight = parseFloat(document.getElementById('progressWeight').value);
+  const notes = document.getElementById('progressNotes').value;
+
+  if (!weight) {
+    showNotif('Ingresa tu peso');
+    return;
+  }
+
+  const entry = {
+    date: new Date().toLocaleDateString('es-ES'),
+    weight: weight,
+    notes: notes
+  };
+
+  progressHistory.unshift(entry);
+  localStorage.setItem('progressHistory_' + getCurrentUser().username, JSON.stringify(progressHistory));
+
+  document.getElementById('progressWeight').value = '';
+  document.getElementById('progressNotes').value = '';
+
+  displayProgressHistory();
+  showNotif('✅ Peso registrado');
+}
+
+function loadProgressHistory() {
+  if (isAuthenticated()) {
+    const saved = localStorage.getItem('progressHistory_' + getCurrentUser().username);
+    progressHistory = saved ? JSON.parse(saved) : [];
+  }
+}
+
+function displayProgressHistory() {
+  const historyDiv = document.getElementById('progressHistory');
+  
+  if (progressHistory.length === 0) {
+    historyDiv.innerHTML = '<p style="color:#999; font-size:12px;">No hay registros aún</p>';
+    return;
+  }
+
+  historyDiv.innerHTML = progressHistory.map((entry, idx) => `
+    <div class="history-item">
+      <div class="history-item-date">📅 ${entry.date}</div>
+      <div class="history-item-data">⚖️ Peso: ${entry.weight} kg ${entry.notes ? '| ' + entry.notes : ''}</div>
+      <button class="btn btn-danger" style="margin-top:8px; padding:6px 12px; font-size:11px;" onclick="deleteProgressEntry(${idx})">🗑️ Eliminar</button>
+    </div>
+  `).join('');
+}
+
+function deleteProgressEntry(idx) {
+  progressHistory.splice(idx, 1);
+  localStorage.setItem('progressHistory_' + getCurrentUser().username, JSON.stringify(progressHistory));
+  displayProgressHistory();
+  showNotif('❌ Entrada eliminada');
+}
+
+function updateSummary() {
+  let summary = `<strong>👤 ${userProfile.name || 'Sin nombre'}</strong><br>`;
+  summary += `Edad: ${userProfile.age || '-'} años | ${userProfile.gender || '-'}<br>`;
+  summary += `Altura: ${userProfile.height || '-'} cm | Peso: ${userProfile.weight || '-'} kg<br>`;
+  summary += `IMC: ${userProfile.bmi || '-'} | Grasa: ${userProfile.fat || '-'}%<br><br>`;
+  summary += `<strong>⚙️ Entrenamiento</strong><br>`;
+  summary += `Nivel: ${userProfile.workoutLevel || '-'} | Objetivo: ${userProfile.workoutGoal || '-'}<br>`;
+  summary += `Días/semana: ${userProfile.daysPerWeek || '-'}`;
+
+  document.getElementById('profileSummary').innerHTML = summary;
+}
+
+function resetProfile() {
+  if (confirm('¿Estás seguro? Esto borrará todos tus datos de perfil')) {
+    userProfile = {};
+    progressHistory = [];
+    localStorage.removeItem('progressHistory_' + getCurrentUser().username);
+    saveUserProfile({});
+    
+    document.getElementById('userName').value = '';
+    document.getElementById('userAge').value = '';
+    document.getElementById('userGender').value = '';
+    document.getElementById('userBio').value = '';
+    document.getElementById('userHeight').value = '';
+    document.getElementById('userWeight').value = '';
+    document.getElementById('userFat').value = '';
+    document.getElementById('workoutLevel').value = '';
+    document.getElementById('workoutGoal').value = '';
+    document.getElementById('daysPerWeek').value = '';
+    document.getElementById('statsDisplay').innerHTML = '';
+    document.getElementById('progressHistory').innerHTML = '';
+
+    updateSummary();
+    showNotif('🔄 Datos limpiados');
+  }
+}
+
+function showNotif(msg) {
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.style.display = 'block';
+  setTimeout(() => n.style.display = 'none', 3000);
+}
+
+function displayAchievements() {
+  if (!isAuthenticated()) return;
+
+  const section = document.getElementById('achievementsSection');
+  if (!section) return;
+
+  const unlockedAchievements = getAchievements();
+  const allAchievements = getAllAchievements();
+
+  // Mostrar primeros 4 logros desbloqueados
+  const recentUnlocked = unlockedAchievements.slice(-4).reverse();
+
+  if (recentUnlocked.length === 0) {
+    section.innerHTML = `
+      <div style="text-align: center; padding: 30px; background: rgba(0, 255, 200, 0.05); border-radius: 8px; border: 1px solid rgba(0, 255, 200, 0.1);">
+        <div style="font-size: 48px; margin-bottom: 15px;">🔓</div>
+        <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 10px;">¡Aún no has desbloqueado logros!</p>
+        <p style="color: rgba(255, 255, 255, 0.4); font-size: 12px;">Completa entrenamientos y cumpla objetivos para desbloquear</p>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px;">';
+
+  recentUnlocked.forEach(id => {
+    const ach = allAchievements[id];
+    if (ach) {
+      html += `
+        <div style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1)); border: 2px solid rgba(212, 175, 55, 0.4); border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative;" title="${ach.description}" onmouseover="this.style.background='linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.2))'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.1))'; this.style.transform='scale(1)'">
+          <div style="font-size: 24px; margin-bottom: 6px;">${ach.name.split(' ')[0]}</div>
+          <div style="font-size: 10px; color: #d4af37; font-weight: 600; line-height: 1.2;">${ach.name}</div>
+          <div style="position: absolute; top: 2px; right: 4px; background: #d4af37; color: black; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800;">✓</div>
+        </div>
+      `;
+    }
+  });
+
+  html += '</div>';
+  section.innerHTML = html;
+}
+
+function showAllAchievements() {
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+    padding: 20px;
+  `;
+
+  const unlockedAchievements = getAchievements();
+  const allAchievements = getAllAchievements();
+  const totalUnlocked = unlockedAchievements.length;
+  const totalPossible = Object.keys(allAchievements).length;
+  const percentComplete = ((totalUnlocked / totalPossible) * 100).toFixed(1);
+
+  let content = `
+    <div style="background: linear-gradient(135deg, rgba(20, 30, 40, 0.98), rgba(10, 10, 20, 0.98)); border: 1px solid rgba(0, 255, 200, 0.2); border-radius: 12px; padding: 30px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative;">
+      <button onclick="this.closest('div').parentElement.remove()" style="position: absolute; top: 15px; right: 15px; background: #ff3333; color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-size: 20px; transition: all 0.3s;" onmouseover="this.style.background='#ff5555'; this.style.transform='rotate(90deg)'" onmouseout="this.style.background='#ff3333'; this.style.transform='rotate(0)'">✕</button>
+      <h2 style="color: #d4af37; font-size: 24px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">🏆 Logros Desbloqueados</h2>
+      <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; background: rgba(0, 255, 200, 0.1); padding: 15px; border-radius: 8px; border-left: 3px solid #00ffc8;">
+        <div>
+          <div style="font-size: 32px; font-weight: 800; color: #d4af37;">${totalUnlocked}/${totalPossible}</div>
+          <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6);">Logros</div>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 12px; color: rgba(255, 255, 255, 0.6); margin-bottom: 5px;">Progreso</div>
+          <div style="background: rgba(0, 0, 0, 0.5); height: 8px; border-radius: 4px; overflow: hidden;">
+            <div style="background: linear-gradient(90deg, #d4af37, #ffed4e); height: 100%; width: ${percentComplete}%; transition: width 0.5s ease;"></div>
+          </div>
+          <div style="font-size: 11px; color: #d4af37; margin-top: 4px;">${percentComplete}% Completado</div>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;">
+  `;
+
+  Object.entries(allAchievements).forEach(([id, ach]) => {
+    const isUnlocked = unlockedAchievements.includes(id);
+    content += `
+      <div style="background: ${isUnlocked ? 'linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(212, 175, 55, 0.15))' : 'rgba(100, 100, 100, 0.1)'}; border: 2px solid ${isUnlocked ? 'rgba(212, 175, 55, 0.5)' : 'rgba(100, 100, 100, 0.3)'}; border-radius: 10px; padding: 15px; text-align: center; transition: all 0.3s; opacity: ${isUnlocked ? '1' : '0.5'};" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(212, 175, 55, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+        <div style="font-size: 32px; margin-bottom: 8px;">${ach.name.split(' ')[0]}</div>
+        <div style="font-size: 12px; font-weight: 600; color: ${isUnlocked ? '#d4af37' : '#999'}; margin-bottom: 6px; line-height: 1.3;">${ach.name}</div>
+        <div style="font-size: 11px; color: ${isUnlocked ? 'rgba(255, 255, 255, 0.6)' : 'rgba(150, 150, 150, 0.6)'}; line-height: 1.3; margin-bottom: 8px;">${ach.description}</div>
+        ${isUnlocked ? `<div style="background: #d4af37; color: black; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">✓ Desbloqueado</div>` : `<div style="background: rgba(100, 100, 100, 0.2); color: #999; padding: 4px 8px; border-radius: 4px; font-size: 11px;">🔒 Bloqueado</div>`}
+      </div>
+    `;
+  });
+
+  content += '</div></div>';
+  modal.innerHTML = content;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
+  });
+}
+
+</script>
+</body>
+</html>

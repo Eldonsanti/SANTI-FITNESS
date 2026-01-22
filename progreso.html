@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANTI FITNESS • Progreso</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
+<script src="assets/js/auth.js"></script>
+<style>
+:root{--neon:#00ffc8; --gold:#d4af37; --purple:#c44dff; --pink:#ff6b9d; --cyan:#00d4ff;}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Montserrat',sans-serif; background:linear-gradient(180deg, #000 0%, #0f2027 50%, #001a33 100%); color:white; min-height:100vh;}
+header{position:sticky; top:0; z-index:50; padding:20px; background:linear-gradient(135deg, #0a0a0a, #1a1a1a); box-shadow:0 0 50px rgba(0, 255, 200, 0.3); display:flex; justify-content:space-between; align-items:center;}
+header h1{margin:0; font-size:32px; letter-spacing:3px;}
+header span{color:var(--neon);}
+#headerRight{display:flex; gap:15px; flex-wrap:wrap; align-items:center;}
+.nav-btn{padding:10px 16px; border-radius:8px; border:1px solid var(--neon); background:rgba(0, 255, 200, 0.1); color:white; cursor:pointer; font-weight:600; transition:all 0.3s; font-size:12px;}
+.nav-btn:hover{background:rgba(0, 255, 200, 0.2);}
+.container{max-width:1200px; margin:30px auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:25px; padding:0 15px;}
+.card{background:linear-gradient(135deg, rgba(20, 30, 40, 0.9), rgba(10, 10, 20, 0.95)); border-radius:14px; padding:25px; box-shadow:0 8px 32px rgba(0, 255, 200, 0.1); border:1px solid rgba(0, 255, 200, 0.15);}
+.card h2{color:var(--neon); font-size:22px; margin-bottom:15px;}
+input, textarea{width:100%; padding:11px; border-radius:8px; border:1px solid rgba(0, 255, 200, 0.2); background:rgba(10, 10, 20, 0.8); color:white; font-family:inherit; margin-bottom:10px; font-size:13px;}
+input:focus, textarea:focus{outline:none; border-color:var(--neon); box-shadow:0 0 20px rgba(0, 255, 200, 0.3);}
+button{background:linear-gradient(135deg, var(--neon), #00d4ff); border:none; border-radius:8px; padding:11px 20px; font-weight:600; cursor:pointer; color:black; font-size:13px; width:100%;}
+button:hover{transform:translateY(-2px); box-shadow:0 6px 16px rgba(0, 255, 200, 0.4);}
+.stat{display:grid; grid-template-columns:repeat(auto-fit, minmax(100px, 1fr)); gap:12px; margin:15px 0;}
+.stat-box{background:rgba(0, 255, 200, 0.05); border:1px solid rgba(0, 255, 200, 0.2); border-radius:8px; padding:12px; text-align:center;}
+.stat-val{font-size:20px; font-weight:800; color:var(--neon);}
+.stat-label{font-size:11px; color:#999; margin-top:5px;}
+.item-list{display:flex; flex-direction:column; gap:10px; margin-top:15px; max-height:300px; overflow-y:auto;}
+.item{background:rgba(0, 255, 200, 0.05); border:1px solid rgba(0, 255, 200, 0.2); border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;}
+.item-name{flex:1; font-weight:600; color:var(--cyan);}
+.item-del{background:rgba(255, 0, 0, 0.2); color:var(--pink); border:none; padding:6px 12px; font-size:11px; cursor:pointer; border-radius:4px;}
+.item-del:hover{background:rgba(255, 0, 0, 0.4);}
+.notif{position:fixed; top:20px; right:20px; background:linear-gradient(135deg, var(--neon), #00d4ff); color:black; padding:16px 24px; border-radius:10px; font-weight:600; z-index:300; display:none;}
+@media(max-width:768px){.container{grid-template-columns:1fr;} header h1{font-size:24px;}}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>SANTI</span> FITNESS • PROGRESO</h1>
+  <div id="headerRight"></div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>⚖️ Registro de Peso</h2>
+    <input type="date" id="weightDate">
+    <input type="number" id="weightVal" placeholder="Peso (kg)" step="0.1">
+    <button onclick="saveWeight()">Guardar Peso</button>
+    <div class="stat" id="weightStats"></div>
+    <div class="item-list" id="weightList"></div>
+  </div>
+
+  <div class="card">
+    <h2>🏆 Récords Personales</h2>
+    <input type="text" id="prExercise" placeholder="Ejercicio (Ej: Press Banca)">
+    <input type="number" id="prWeight" placeholder="Peso (kg)">
+    <input type="text" id="prReps" placeholder="Series x Reps (4x5)">
+    <button onclick="savePR()">Guardar PR</button>
+    <div class="item-list" id="prList"></div>
+  </div>
+
+  <div class="card">
+    <h2>🎯 Mis Metas</h2>
+    <input type="text" id="goalName" placeholder="Meta (Ej: Peso 75kg)">
+    <input type="date" id="goalDate">
+    <textarea id="goalDesc" placeholder="Descripción..." rows="2"></textarea>
+    <button onclick="saveGoal()">Agregar Meta</button>
+    <div class="item-list" id="goalList"></div>
+  </div>
+
+  <div class="card" style="grid-column:1/-1;">
+    <h2>📊 Dashboard de Progreso</h2>
+    <div class="stat">
+      <div class="stat-box">
+        <div class="stat-label">Pesos Registrados</div>
+        <div class="stat-val" id="totalWeights">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">PRs Registrados</div>
+        <div class="stat-val" id="totalPRs">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Metas Activas</div>
+        <div class="stat-val" id="totalGoals">0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="notif" class="notif"></div>
+
+<script src="assets/js/dashboard.js"></script>
+<script>
+let weights = [];
+let prs = [];
+let goals = [];
+
+function loadProgressData() {
+  if (!isAuthenticated()) {
+    location.href = 'index.html';
+    return;
+  }
+  
+  const savedData = getProgressData();
+  if (savedData) {
+    weights = savedData.weights || [];
+    prs = savedData.prs || [];
+    goals = savedData.goals || [];
+  } else {
+    // Cargar datos antiguos si existen (para compatibilidad)
+    weights = JSON.parse(localStorage.getItem('weights')) || [];
+    prs = JSON.parse(localStorage.getItem('prs')) || [];
+    goals = JSON.parse(localStorage.getItem('goals')) || [];
+  }
+}
+
+function syncProgressDataToUser() {
+  if (!isAuthenticated()) return;
+  
+  const progressDataObj = {
+    weights: weights,
+    prs: prs,
+    goals: goals,
+    savedDate: new Date().toISOString()
+  };
+  
+  // Llamar a la función global de dashboard.js
+  saveProgressData(progressDataObj);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    loadProgressData();
+    document.getElementById('weightDate').valueAsDate = new Date();
+    document.getElementById('goalDate').valueAsDate = new Date();
+    renderAll();
+  }, 500);
+});
+
+function saveWeight(){
+  const date = document.getElementById('weightDate').value;
+  const weight = parseFloat(document.getElementById('weightVal').value);
+  
+  if(!date || !weight){
+    alert('Fecha y peso requeridos');
+    return;
+  }
+  
+  weights.push({date, weight});
+  syncProgressDataToUser();
+  
+  document.getElementById('weightVal').value = '';
+  renderAll();
+  showNotif('✅ Peso guardado');
+}
+
+function renderWeights(){
+  const list = document.getElementById('weightList');
+  list.innerHTML = '';
+  
+  let min = Infinity, max = -Infinity, current = 0;
+  weights.forEach((w, idx) => {
+    min = Math.min(min, w.weight);
+    max = Math.max(max, w.weight);
+    current = w.weight;
+    
+    list.innerHTML += `
+      <div class="item">
+        <div>
+          <div class="item-name">${w.weight} kg</div>
+          <div style="font-size:11px; color:#999;">${new Date(w.date).toLocaleDateString('es-ES')}</div>
+        </div>
+        <button class="item-del" onclick="delWeight(${idx})">✕</button>
+      </div>
+    `;
+  });
+  
+  if(weights.length > 0){
+    document.getElementById('weightStats').innerHTML = `
+      <div class="stat-box">
+        <div class="stat-label">Actual</div>
+        <div class="stat-val">${current}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Mín</div>
+        <div class="stat-val">${min}</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Máx</div>
+        <div class="stat-val">${max}</div>
+      </div>
+    `;
+  }
+}
+
+function delWeight(idx){
+  weights.splice(idx, 1);
+  syncProgressDataToUser();
+  renderWeights();
+}
+
+function savePR(){
+  const exercise = document.getElementById('prExercise').value;
+  const weight = parseInt(document.getElementById('prWeight').value);
+  const reps = document.getElementById('prReps').value;
+  
+  if(!exercise || !weight || !reps){
+    alert('Todos los campos requeridos');
+    return;
+  }
+  
+  prs.push({exercise, weight, reps, date: new Date().toLocaleDateString('es-ES')});
+  syncProgressDataToUser();
+  
+  document.getElementById('prExercise').value = '';
+  document.getElementById('prWeight').value = '';
+  document.getElementById('prReps').value = '';
+  
+  renderPRs();
+  showNotif('🏆 PR guardado');
+}
+
+function renderPRs(){
+  const list = document.getElementById('prList');
+  list.innerHTML = '';
+  
+  prs.forEach((p, idx) => {
+    list.innerHTML += `
+      <div class="item">
+        <div>
+          <div class="item-name">${p.exercise}</div>
+          <div style="font-size:11px; color:#999;">${p.weight}kg x ${p.reps} - ${p.date}</div>
+        </div>
+        <button class="item-del" onclick="delPR(${idx})">✕</button>
+      </div>
+    `;
+  });
+}
+
+function delPR(idx){
+  prs.splice(idx, 1);
+  syncProgressDataToUser();
+  renderPRs();
+}
+
+function saveGoal(){
+  const name = document.getElementById('goalName').value;
+  const date = document.getElementById('goalDate').value;
+  const desc = document.getElementById('goalDesc').value;
+  
+  if(!name || !date){
+    alert('Nombre y fecha requeridos');
+    return;
+  }
+  
+  goals.push({name, date, desc, completed: false});
+  syncProgressDataToUser();
+  
+  document.getElementById('goalName').value = '';
+  document.getElementById('goalDesc').value = '';
+  
+  renderGoals();
+  showNotif('🎯 Meta agregada');
+}
+
+function renderGoals(){
+  const list = document.getElementById('goalList');
+  list.innerHTML = '';
+  
+  goals.forEach((g, idx) => {
+    list.innerHTML += `
+      <div class="item">
+        <div>
+          <div class="item-name">${g.name}</div>
+          <div style="font-size:11px; color:#999;">${g.date}</div>
+        </div>
+        <button class="item-del" onclick="delGoal(${idx})">✕</button>
+      </div>
+    `;
+  });
+}
+
+function delGoal(idx){
+  goals.splice(idx, 1);
+  syncProgressDataToUser();
+  renderGoals();
+}
+
+function updateDashboard(){
+  document.getElementById('totalWeights').textContent = weights.length;
+  document.getElementById('totalPRs').textContent = prs.length;
+  document.getElementById('totalGoals').textContent = goals.length;
+}
+
+function renderAll(){
+  renderWeights();
+  renderPRs();
+  renderGoals();
+  updateDashboard();
+}
+
+function showNotif(msg){
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.style.display = 'block';
+  setTimeout(() => n.style.display = 'none', 2500);
+}
+</script>
+</body>
+</html>

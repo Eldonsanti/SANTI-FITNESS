@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SANTI FITNESS - Tu plataforma completa de entrenamiento, nutrición y seguimiento de progreso">
+<meta name="keywords" content="fitness, entrenamiento, ejercicios, nutrición, progreso">
+<title>SANTI FITNESS • Tu Plataforma de Entrenamiento</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/dashboard.js"></script>
+<style>
+:root{--neon:#00ffc8; --gold:#d4af37; --purple:#c44dff; --pink:#ff6b9d; --cyan:#00d4ff;}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Montserrat',sans-serif; background:linear-gradient(180deg, #000 0%, #0f2027 50%, #001a33 100%); color:white; overflow-x:hidden; min-height:100vh;}
+header{position:sticky; top:0; z-index:50; padding:20px 15px; background:linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(10, 10, 20, 0.8)); box-shadow:0 0 50px rgba(0, 255, 200, 0.2); border-bottom:2px solid rgba(0, 255, 200, 0.1); display:flex; justify-content:space-between; align-items:center;}
+header h1{font-size:32px; letter-spacing:3px; margin:0; font-weight:800; text-shadow:0 0 30px rgba(0, 255, 200, 0.6);}
+header span{color:var(--neon);}
+.nav-btn{padding:10px 16px; border-radius:8px; border:1px solid var(--neon); background:rgba(0, 255, 200, 0.1); color:white; cursor:pointer; font-weight:600; transition:all 0.3s; font-size:12px;}
+.nav-btn:hover{background:rgba(0, 255, 200, 0.2); transform:translateY(-2px);}
+.tagline{font-size:18px; color:var(--cyan); margin-top:12px; font-weight:600; letter-spacing:2px; opacity:0.9;}
+.container{max-width:1200px; margin:50px auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:30px; padding:0 15px;}
+.card{background:linear-gradient(135deg, rgba(20, 30, 40, 0.95), rgba(10, 10, 20, 0.95)); border-radius:18px; padding:40px 30px; box-shadow:0 20px 60px rgba(0, 255, 200, 0.1); transition:all 0.35s cubic-bezier(0.23, 1, 0.32, 1); position:relative; overflow:hidden; border:1px solid rgba(0, 255, 200, 0.2); display:flex; flex-direction:column; align-items:center; text-align:center; cursor:pointer;}
+.card::before{content:''; position:absolute; inset:0; background:linear-gradient(135deg, transparent 0%, rgba(0, 255, 200, 0.15) 100%); opacity:0; transition:opacity 0.35s;}
+.card::after{content:''; position:absolute; top:-50%; right:-50%; width:200px; height:200px; background:radial-gradient(circle, rgba(0, 255, 200, 0.1) 0%, transparent 70%); opacity:0; transition:opacity 0.35s;}
+.card:hover{transform:translateY(-16px) scale(1.02); box-shadow:0 40px 100px rgba(0, 255, 200, 0.25), inset 0 0 50px rgba(0, 255, 200, 0.05); border-color:rgba(0, 255, 200, 0.4);}
+.card:hover::before{opacity:1;}
+.card:hover::after{opacity:1;}
+.card-icon{font-size:64px; margin-bottom:25px; filter:drop-shadow(0 0 15px rgba(0, 255, 200, 0.5)); transition:all 0.3s;}
+.card:hover .card-icon{transform:scale(1.15) rotate(5deg);}
+.card h2{color:var(--neon); margin:0 0 18px 0; font-size:28px; letter-spacing:1px; text-shadow:0 0 15px rgba(0, 255, 200, 0.5); font-weight:700;}
+.card p{color:rgba(255, 255, 255, 0.85); font-size:14px; margin:0 0 28px 0; line-height:1.7; flex-grow:1;}
+button.btn-main{background:linear-gradient(135deg, var(--neon), #00d4ff); border:none; border-radius:12px; padding:16px 32px; font-weight:700; cursor:pointer; transition:all 0.3s; color:black; font-size:16px; box-shadow:0 8px 25px rgba(0, 255, 200, 0.4); position:relative; overflow:hidden; width:100%; min-height:52px;}
+button.btn-main::before{content:''; position:absolute; inset:0; background:linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent); opacity:0; transition:opacity 0.3s;}
+button.btn-main:hover{transform:translateY(-3px); box-shadow:0 16px 40px rgba(0, 255, 200, 0.6); filter:brightness(1.12);}
+button.btn-main:hover::before{opacity:1;}
+button.btn-main:active{transform:translateY(-1px);}
+.restricted{opacity:0.5; pointer-events:none;}
+.restricted::after{content:'🔒 Solo con sesión'; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.9); padding:10px 15px; border-radius:8px; font-size:12px; white-space:nowrap; z-index:10;}
+@media(max-width:768px){header h1{font-size:24px;} header{flex-direction:column; gap:15px;} .tagline{font-size:15px;} .container{grid-template-columns:1fr; gap:20px;} .card{padding:30px 25px;} .card-icon{font-size:48px;} button.btn-main{padding:14px 24px; font-size:15px;}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span>SANTI</span> FITNESS</h1>
+  <div id="headerRight"></div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <div class="card-icon">📊</div>
+    <h2>Dashboard</h2>
+    <p>Tu panel de control personal con estadísticas, entrenamientos y logros.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='dashboard.html'">Ver Dashboard</button>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🏋️</div>
+    <h2>Ejercicios</h2>
+    <p>Accede a una amplia base de datos de ejercicios con imágenes y técnicas correctas.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='ejercicios.html'">Ir a Ejercicios</button>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">📅</div>
+    <h2>Calendario de Rutina</h2>
+    <p>Organiza tu semana de entrenamiento y configura tus días de descanso.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='calendario.html'">Ir al Calendario</button>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">📈</div>
+    <h2>Seguimiento de Progreso</h2>
+    <p>Registra tu peso, fuerza y evolución en tu entrenamiento.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='progreso.html'">Ver Progreso</button>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🥗</div>
+    <h2>Nutrición</h2>
+    <p>Calcula tu TDEE, macronutrientes y planifica tu dieta.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='nutricion.html'">Ir a Nutrición</button>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">👤</div>
+    <h2>Mi Perfil</h2>
+    <p>Gestiona tu información personal y objetivos de fitness.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='perfil.html'">Mi Perfil</button>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🔥</div>
+    <h2>Mentalidad</h2>
+    <p>Motivación diaria y frases inspiradoras para tu entrenamiento.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='mentalidad.html'">Leer Más</button>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">💪</div>
+    <h2>Rutinas Pre-construidas</h2>
+    <p>Elige una plantilla de rutina PPL, Upper/Lower, Full Body y más.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='rutinas.html'">Ver Rutinas</button>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🌐</div>
+    <h2>Red Social</h2>
+    <p>Conecta con amigos, participa en desafíos y compara logros.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='social.html'">Ir a Social</button>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">📖</div>
+    <h2>Base de Datos Ejercicios</h2>
+    <p>Consulta técnica, alternativas y detalles de cada ejercicio.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='ejercicios-db.html'">Ver Base de Datos</button>
+  </div>
+
+  <div id="adminCard" class="card" style="display:none;">
+    <div class="card-icon">🔴</div>
+    <h2>Panel Admin</h2>
+    <p>Gestiona usuarios, otorga logros y controla la plataforma.</p>
+    <button class="btn-main" onclick="if(checkAccess(true)) location.href='admin.html'">Ir a Admin</button>
+  </div>
+</div>
+
+</body>
+</html>
+
+<script>
+  function checkAccess(requireAuth = false) {
+    if (requireAuth && !isAuthenticated() && !isGuest) {
+      openLoginModal();
+      return false;
+    }
+    return true;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const headerRight = document.getElementById('headerRight');
+    
+    if (isAuthenticated()) {
+      headerRight.innerHTML = `
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <span style="color: var(--neon); font-weight: 600;">👤 ${currentUser.username}</span>
+          <button class="nav-btn" onclick="logout()">🚪 Salir</button>
+        </div>
+      `;
+      
+      // Mostrar panel admin solo para usuario admin
+      if (currentUser.username === 'admin') {
+        document.getElementById('adminCard').style.display = 'flex';
+      }
+    } else {
+      headerRight.innerHTML = `
+        <button class="nav-btn" onclick="openLoginModal()">🔐 Iniciar Sesión</button>
+      `;
+    }
+  });
+
+  function logout() {
+    try {
+      localStorage.removeItem('currentUser');
+      localStorage.removeItem('currentSession');
+      localStorage.removeItem('guestSession');
+      
+      if (currentUser) {
+        localStorage.removeItem(`temp_calendar_${currentUser.username}`);
+        localStorage.removeItem(`temp_progress_${currentUser.username}`);
+        localStorage.removeItem(`temp_mentality_${currentUser.username}`);
+      }
+      
+      currentUser = null;
+      isGuest = false;
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+      window.location.reload();
+    }
+  }
+</script>

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Admin - SANTI FITNESS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --neon: #00ffc8;
+      --neon-alt: #00c8ff;
+      --purple: #9d4edd;
+      --dark: #0f0f0f;
+      --darker: #1a1a1a;
+      --danger: #ff6464;
+    }
+
+    body {
+      background: linear-gradient(180deg, #000 0%, #0f2027 50%, #001a33 100%);
+      color: #e0e0e0;
+      font-family: 'Arial', sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(15, 15, 15, 0.9);
+      border-bottom: 2px solid var(--danger);
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+
+    .navbar-brand {
+      color: var(--danger);
+      font-weight: 700;
+      font-size: 1.3em;
+    }
+
+    .navbar-links {
+      display: flex;
+      gap: 15px;
+    }
+
+    .navbar-links a {
+      color: #ddd;
+      text-decoration: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-links a:hover {
+      background: rgba(255, 100, 100, 0.1);
+      color: var(--danger);
+    }
+
+    .logout-btn {
+      padding: 8px 15px;
+      background: rgba(255, 100, 100, 0.2);
+      border: 2px solid var(--danger);
+      color: var(--danger);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 100, 100, 0.3);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 20px 0;
+    }
+
+    .header h1 {
+      color: var(--danger);
+      margin-bottom: 10px;
+      font-size: 2.5em;
+      text-shadow: 0 0 20px rgba(255, 100, 100, 0.5);
+    }
+
+    .header p {
+      color: #999;
+      font-size: 1.1em;
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .admin-card {
+      background: linear-gradient(135deg, rgba(255, 100, 100, 0.05), rgba(255, 150, 100, 0.05));
+      border: 2px solid rgba(255, 100, 100, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .admin-card:hover {
+      border-color: var(--danger);
+      transform: translateY(-5px);
+      box-shadow: 0 0 25px rgba(255, 100, 100, 0.3);
+    }
+
+    .card-title {
+      color: var(--danger);
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .admin-section {
+      background: linear-gradient(135deg, rgba(255, 100, 100, 0.05), rgba(255, 150, 100, 0.05));
+      border: 2px solid rgba(255, 100, 100, 0.3);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      color: var(--danger);
+      font-size: 1.4em;
+      font-weight: 700;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--danger);
+    }
+
+    /* Tabla de usuarios */
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .users-table th {
+      background: rgba(255, 100, 100, 0.1);
+      color: var(--danger);
+      padding: 12px;
+      text-align: left;
+      font-weight: 700;
+      border: 1px solid rgba(255, 100, 100, 0.3);
+    }
+
+    .users-table td {
+      padding: 12px;
+      border: 1px solid rgba(255, 100, 100, 0.2);
+      color: #ddd;
+    }
+
+    .users-table tr:hover {
+      background: rgba(255, 100, 100, 0.1);
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9em;
+      transition: all 0.3s ease;
+      margin-right: 5px;
+    }
+
+    .btn-edit {
+      background: rgba(0, 200, 255, 0.2);
+      color: var(--neon-alt);
+    }
+
+    .btn-edit:hover {
+      background: rgba(0, 200, 255, 0.3);
+      transform: scale(1.05);
+    }
+
+    .btn-delete {
+      background: rgba(255, 100, 100, 0.2);
+      color: var(--danger);
+    }
+
+    .btn-delete:hover {
+      background: rgba(255, 100, 100, 0.3);
+      transform: scale(1.05);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--danger), #ff8050);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255, 100, 100, 0.5);
+    }
+
+    /* Formulario */
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      color: var(--neon);
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 100, 100, 0.3);
+      color: #ddd;
+      border-radius: 6px;
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--danger);
+      box-shadow: 0 0 15px rgba(255, 100, 100, 0.3);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: rgba(255, 100, 100, 0.1);
+      border: 2px solid var(--danger);
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .stat-number {
+      color: var(--danger);
+      font-size: 2.5em;
+      font-weight: 700;
+      margin: 10px 0;
+    }
+
+    .stat-label {
+      color: #aaa;
+      font-size: 0.9em;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      border: 2px solid var(--danger);
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      color: var(--danger);
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(255, 100, 100, 0.5);
+    }
+
+    .modal-close {
+      float: right;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: var(--danger);
+      font-weight: bold;
+    }
+
+    .modal-close:hover {
+      color: var(--neon);
+    }
+
+    .notif {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 100, 100, 0.2);
+      border: 2px solid var(--danger);
+      color: var(--danger);
+      padding: 15px 25px;
+      border-radius: 8px;
+      z-index: 2000;
+      font-weight: 600;
+      box-shadow: 0 0 20px rgba(255, 100, 100, 0.4);
+    }
+
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .badge-item {
+      background: rgba(0, 255, 200, 0.1);
+      border: 2px solid var(--neon);
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9em;
+    }
+
+    .badge-item:hover {
+      transform: scale(1.05);
+      background: rgba(0, 255, 200, 0.2);
+    }
+
+    .badge-item.selected {
+      background: rgba(0, 255, 200, 0.3);
+      box-shadow: 0 0 15px rgba(0, 255, 200, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-brand">🔴 PANEL ADMIN - SANTI FITNESS</div>
+    <div class="navbar-links">
+      <a href="index.html">🏠 Inicio</a>
+      <a href="dashboard.html">📊 Dashboard</a>
+    </div>
+    <button class="logout-btn" onclick="logout()">🚪 Salir</button>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <h1>⚙️ Panel de Control Administrativo</h1>
+      <p>Gestiona usuarios, otorga logros y monitorea la plataforma</p>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">👥 Usuarios Totales</div>
+        <div class="stat-number" id="totalUsers">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">🏋️ Entrenamientos</div>
+        <div class="stat-number" id="totalWorkouts">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">🏆 Logros Otorgados</div>
+        <div class="stat-number" id="totalAchievements">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">⚡ Actividad</div>
+        <div class="stat-number" id="todayActivity">0</div>
+      </div>
+    </div>
+
+    <!-- Gestión de Usuarios -->
+    <div class="admin-section">
+      <h2 class="section-title">👥 Gestión de Usuarios</h2>
+      <button class="btn-primary" onclick="openNewUserModal()">➕ Crear Nuevo Usuario</button>
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Fecha Creación</th>
+            <th>Últimos Acceso</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Otorgar Logros -->
+    <div class="admin-section">
+      <h2 class="section-title">🏆 Otorgar Logros/Medallas</h2>
+      <div class="form-group">
+        <label>Seleccionar Usuario</label>
+        <select id="userSelect" onchange="cargarLogrosUsuario()">
+          <option value="">-- Elige un usuario --</option>
+        </select>
+      </div>
+
+      <div id="logrosContainer" style="display: none;">
+        <h3 style="color: var(--neon); margin: 20px 0 10px 0;">Medallas Disponibles</h3>
+        <div class="badges-grid" id="logrosDisponibles"></div>
+        
+        <h3 style="color: var(--neon); margin: 20px 0 10px 0;">Logros Actuales del Usuario</h3>
+        <div class="badges-grid" id="logrosActuales"></div>
+
+        <button class="btn-primary" onclick="guardarLogrosUsuario()" style="margin-top: 20px;">💾 Guardar Cambios</button>
+      </div>
+    </div>
+
+    <!-- Sistema de Reportes -->
+    <div class="admin-section">
+      <h2 class="section-title">📋 Reportes del Sistema</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <button class="btn-primary" onclick="exportarReporte('usuarios')">📥 Exportar Usuarios</button>
+        <button class="btn-primary" onclick="exportarReporte('entrenamientos')">📥 Exportar Entrenamientos</button>
+        <button class="btn-primary" onclick="exportarReporte('logros')">📥 Exportar Logros</button>
+        <button class="btn-primary" onclick="resetDatabase()">⚠️ Limpiar Base de Datos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Nuevo Usuario -->
+  <div class="modal" id="newUserModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="cerrarModal('newUserModal')">&times;</span>
+      <h2 class="modal-header">➕ Crear Nuevo Usuario</h2>
+      <div class="form-group">
+        <label>Nombre de Usuario</label>
+        <input type="text" id="newUsername" placeholder="ej: usuario123">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="newPassword" placeholder="ej: contraseña123">
+      </div>
+      <div class="form-group">
+        <label>Email (opcional)</label>
+        <input type="email" id="newEmail" placeholder="usuario@email.com">
+      </div>
+      <button class="btn-primary" onclick="crearNuevoUsuario()" style="width: 100%; padding: 15px;">✅ Crear Usuario</button>
+    </div>
+  </div>
+
+  <!-- Modal: Editar Usuario -->
+  <div class="modal" id="editUserModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="cerrarModal('editUserModal')">&times;</span>
+      <h2 class="modal-header">✏️ Editar Usuario</h2>
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" id="editUsername" disabled>
+      </div>
+      <div class="form-group">
+        <label>Nueva Contraseña (dejar en blanco para no cambiar)</label>
+        <input type="password" id="editPassword" placeholder="nueva contraseña">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="editEmail" placeholder="usuario@email.com">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn-primary" onclick="guardarEdicionUsuario()" style="flex: 1; padding: 15px;">💾 Guardar</button>
+        <button class="btn-primary" style="background: var(--danger); flex: 1; padding: 15px; cursor: pointer;" onclick="eliminarUsuario()">🗑️ Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notif" id="notif"></div>
+
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/dashboard.js"></script>
+  <script>
+    const logrosDisponibles = [
+      { id: 1, nombre: '🥇 Primer Entrenamiento', emoji: '🥇', desc: 'Primera sesión completada' },
+      { id: 2, nombre: '🔥 Racha de 7 Días', emoji: '🔥', desc: 'Entrenó 7 días consecutivos' },
+      { id: 3, nombre: '💪 Fuerza Máxima', emoji: '💪', desc: 'Levantó su peso en PR' },
+      { id: 4, nombre: '⚡ 100 Ejercicios', emoji: '⚡', desc: 'Completó 100 ejercicios' },
+      { id: 5, nombre: '🌟 100 Entrenamientos', emoji: '🌟', desc: 'Alcanzó 100 entrenamientos' },
+      { id: 6, nombre: '🎯 Meta Alcanzada', emoji: '🎯', desc: 'Alcanzó una meta personal' },
+      { id: 7, nombre: '👑 Champion', emoji: '👑', desc: 'Usuario élite' },
+      { id: 8, nombre: '🚀 Ascenso', emoji: '🚀', desc: 'Progresión excepcional' }
+    ];
+
+    let usuarioEnEdicion = null;
+    let logrosSeleccionados = [];
+
+    function cargarEstadisticas() {
+      const allUsers = JSON.parse(localStorage.getItem('users')) || {};
+      document.getElementById('totalUsers').textContent = Object.keys(allUsers).length;
+
+      let totalWorkouts = 0;
+      let totalAchievements = 0;
+      let todayActivity = 0;
+
+      for (let user in allUsers) {
+        const calendarData = JSON.parse(localStorage.getItem(`calendar_${user}`)) || {};
+        if (calendarData.exercises) {
+          Object.values(calendarData.exercises).forEach(day => {
+            totalWorkouts += day.length;
+          });
+        }
+
+        const achievements = JSON.parse(localStorage.getItem(`achievements_${user}`)) || [];
+        totalAchievements += achievements.length;
+      }
+
+      document.getElementById('totalWorkouts').textContent = totalWorkouts;
+      document.getElementById('totalAchievements').textContent = totalAchievements;
+      document.getElementById('todayActivity').textContent = todayActivity;
+    }
+
+    function cargarUsuarios() {
+      const allUsers = JSON.parse(localStorage.getItem('users')) || {};
+      const tbody = document.getElementById('usersTableBody');
+      const userSelect = document.getElementById('userSelect');
+      
+      tbody.innerHTML = '';
+      userSelect.innerHTML = '<option value="">-- Elige un usuario --</option>';
+
+      for (let username in allUsers) {
+        const user = allUsers[username];
+        
+        // Agregar a tabla
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${username}</td>
+          <td>${user.createdDate || 'N/A'}</td>
+          <td>${user.lastLogin || 'Nunca'}</td>
+          <td><span style="color: var(--neon);">✅ Activo</span></td>
+          <td>
+            <button class="btn-small btn-edit" onclick="openEditUserModal('${username}')">✏️ Editar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+
+        // Agregar a select
+        const opt = document.createElement('option');
+        opt.value = username;
+        opt.textContent = username;
+        userSelect.appendChild(opt);
+      }
+    }
+
+    function openNewUserModal() {
+      document.getElementById('newUserModal').classList.add('active');
+    }
+
+    function cerrarModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function crearNuevoUsuario() {
+      const username = document.getElementById('newUsername').value;
+      const password = document.getElementById('newPassword').value;
+      const email = document.getElementById('newEmail').value;
+
+      if (!username || !password) {
+        showNotif('⚠️ Usuario y contraseña son requeridos');
+        return;
+      }
+
+      const allUsers = JSON.parse(localStorage.getItem('users')) || {};
+      if (allUsers[username]) {
+        showNotif('❌ El usuario ya existe');
+        return;
+      }
+
+      const user = {
+        username: username,
+        password: btoa(password),
+        email: email || '',
+        createdDate: new Date().toLocaleDateString('es-ES'),
+        lastLogin: null
+      };
+
+      allUsers[username] = user;
+      localStorage.setItem('users', JSON.stringify(allUsers));
+
+      showNotif(`✅ Usuario "${username}" creado exitosamente`);
+      cerrarModal('newUserModal');
+      document.getElementById('newUsername').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('newEmail').value = '';
+      cargarUsuarios();
+      cargarEstadisticas();
+    }
+
+    function openEditUserModal(username) {
+      usuarioEnEdicion = username;
+      const allUsers = JSON.parse(localStorage.getItem('users')) || {};
+      const user = allUsers[username];
+
+      document.getElementById('editUsername').value = username;
+      document.getElementById('editEmail').value = user.email || '';
+      document.getElementById('editPassword').value = '';
+      document.getElementById('editUserModal').classList.add('active');
+    }
+
+    function guardarEdicionUsuario() {
+      if (!usuarioEnEdicion) return;
+
+      const allUsers = JSON.parse(localStorage.getItem('users')) || {};
+      const newPassword = document.getElementById('editPassword').value;
+      const newEmail = document.getElementById('editEmail').value;
+
+      if (newPassword) {
+        allUsers[usuarioEnEdicion].password = btoa(newPassword);
+      }
+      allUsers[usuarioEnEdicion].email = newEmail;
+
+      localStorage.setItem('users', JSON.stringify(allUsers));
+      showNotif(`✅ Usuario "${usuarioEnEdicion}" actualizado`);
+      cerrarModal('editUserModal');
+      usuarioEnEdicion = null;
+      cargarUsuarios();
+    }
+
+    function eliminarUsuario() {
+      if (!usuarioEnEdicion) return;
+      if (!confirm(`¿Eliminar usuario "${usuarioEnEdicion}" permanentemente?`)) return;
+
+      const allUsers = JSON.parse(localStorage.getItem('users')) || {};
+      delete allUsers[usuarioEnEdicion];
+      localStorage.setItem('users', JSON.stringify(allUsers));
+
+      // Limpiar datos del usuario
+      localStorage.removeItem(`calendar_${usuarioEnEdicion}`);
+      localStorage.removeItem(`progress_${usuarioEnEdicion}`);
+      localStorage.removeItem(`mentality_${usuarioEnEdicion}`);
+      localStorage.removeItem(`achievements_${usuarioEnEdicion}`);
+
+      showNotif(`🗑️ Usuario "${usuarioEnEdicion}" eliminado`);
+      cerrarModal('editUserModal');
+      usuarioEnEdicion = null;
+      cargarUsuarios();
+      cargarEstadisticas();
+    }
+
+    function cargarLogrosUsuario() {
+      const username = document.getElementById('userSelect').value;
+      if (!username) {
+        document.getElementById('logrosContainer').style.display = 'none';
+        return;
+      }
+
+      logrosSeleccionados = [];
+      const achievements = JSON.parse(localStorage.getItem(`achievements_${username}`)) || [];
+      achievements.forEach(a => logrosSeleccionados.push(a.id));
+
+      const disponibles = document.getElementById('logrosDisponibles');
+      disponibles.innerHTML = logrosDisponibles
+        .map(logro => `
+          <div class="badge-item ${logrosSeleccionados.includes(logro.id) ? 'selected' : ''}" 
+               onclick="toggleLogro(${logro.id})">
+            <div style="font-size: 1.5em; margin-bottom: 5px;">${logro.emoji}</div>
+            <div>${logro.nombre}</div>
+            <div style="font-size: 0.8em; color: #aaa; margin-top: 5px;">${logro.desc}</div>
+          </div>
+        `)
+        .join('');
+
+      const actuales = document.getElementById('logrosActuales');
+      actuales.innerHTML = achievements
+        .map(a => `<div class="badge-item selected">${a.emoji} ${a.nombre}</div>`)
+        .join('');
+
+      document.getElementById('logrosContainer').style.display = 'block';
+    }
+
+    function toggleLogro(id) {
+      if (logrosSeleccionados.includes(id)) {
+        logrosSeleccionados = logrosSeleccionados.filter(l => l !== id);
+      } else {
+        logrosSeleccionados.push(id);
+      }
+      cargarLogrosUsuario();
+    }
+
+    function guardarLogrosUsuario() {
+      const username = document.getElementById('userSelect').value;
+      if (!username) return;
+
+      const achievements = logrosSeleccionados
+        .map(id => logrosDisponibles.find(l => l.id === id))
+        .filter(l => l)
+        .map(l => ({
+          id: l.id,
+          nombre: l.nombre,
+          emoji: l.emoji,
+          unlockedDate: new Date().toLocaleDateString('es-ES')
+        }));
+
+      localStorage.setItem(`achievements_${username}`, JSON.stringify(achievements));
+      showNotif(`✅ Logros guardados para "${username}"`);
+      cargarLogrosUsuario();
+    }
+
+    function exportarReporte(tipo) {
+      let data = [];
+      const allUsers = JSON.parse(localStorage.getItem('users')) || {};
+
+      if (tipo === 'usuarios') {
+        data = Object.values(allUsers).map(u => ({
+          Usuario: u.username,
+          Email: u.email,
+          'Fecha Creación': u.createdDate,
+          'Último Acceso': u.lastLogin
+        }));
+      }
+
+      const csv = [Object.keys(data[0] || {})].concat(data.map(row => Object.values(row).map(v => `"${v}"`))).map(row => row.join(',')).join('\n');
+      
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `reporte_${tipo}_${new Date().toLocaleDateString('es-ES')}.csv`;
+      a.click();
+      
+      showNotif(`📥 Reporte "${tipo}" exportado`);
+    }
+
+    function resetDatabase() {
+      if (!confirm('⚠️ ¿ESTÁS SEGURO? Esto eliminará TODOS los datos. ¡Esta acción no se puede deshacer!')) return;
+      if (!confirm('⚠️ Confirma nuevamente que deseas LIMPIAR TODO')) return;
+
+      localStorage.clear();
+      initializeDefaultUsers();
+      showNotif('🔄 Base de datos reiniciada');
+      cargarUsuarios();
+      cargarEstadisticas();
+    }
+
+    function showNotif(msg) {
+      const notif = document.getElementById('notif');
+      notif.textContent = msg;
+      notif.style.display = 'block';
+      setTimeout(() => notif.style.display = 'none', 3000);
+    }
+
+    function logout() {
+      try {
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentSession');
+        localStorage.removeItem('guestSession');
+        
+        if (currentUser) {
+          localStorage.removeItem(`temp_calendar_${currentUser.username}`);
+          localStorage.removeItem(`temp_progress_${currentUser.username}`);
+          localStorage.removeItem(`temp_mentality_${currentUser.username}`);
+        }
+        
+        currentUser = null;
+        isGuest = false;
+        
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 300);
+      } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+        window.location.href = 'index.html';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Verificar que es admin (santiago)
+      if (!isAuthenticated() || currentUser.username !== 'admin') {
+        window.location.href = 'index.html';
+      }
+      cargarUsuarios();
+      cargarEstadisticas();
+    });
+  </script>
+</body>
+</html>

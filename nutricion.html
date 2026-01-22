@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANTI FITNESS • Nutrición</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600;800&display=swap" rel="stylesheet">
+<script src="assets/js/auth.js"></script>
+<style>
+:root{--neon:#00ffc8; --gold:#d4af37; --purple:#c44dff; --pink:#ff6b9d; --cyan:#00d4ff;}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Montserrat',sans-serif; background:linear-gradient(180deg, #000 0%, #0f2027 50%, #001a33 100%); color:white; min-height:100vh;}
+header{position:sticky; top:0; z-index:50; padding:20px; background:linear-gradient(135deg, #0a0a0a, #1a1a1a); box-shadow:0 0 50px rgba(0, 255, 200, 0.3); display:flex; justify-content:space-between; align-items:center;}
+header h1{margin:0; font-size:32px; letter-spacing:3px;}
+header span{color:var(--neon);}
+#headerRight{display:flex; gap:15px; flex-wrap:wrap; align-items:center;}
+.nav-btn{padding:10px 16px; border-radius:8px; border:1px solid var(--neon); background:rgba(0, 255, 200, 0.1); color:white; cursor:pointer; font-weight:600; transition:all 0.3s; font-size:12px;}
+.nav-btn:hover{background:rgba(0, 255, 200, 0.2);}
+.container{max-width:1200px; margin:30px auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:25px; padding:0 15px;}
+.card{background:linear-gradient(135deg, rgba(20, 30, 40, 0.9), rgba(10, 10, 20, 0.95)); border-radius:14px; padding:25px; box-shadow:0 8px 32px rgba(0, 255, 200, 0.1); border:1px solid rgba(0, 255, 200, 0.15);}
+.card h2{color:var(--neon); font-size:22px; margin-bottom:15px;}
+input, select{width:100%; padding:11px; border-radius:8px; border:1px solid rgba(0, 255, 200, 0.2); background:rgba(10, 10, 20, 0.8); color:white; font-family:inherit; margin-bottom:10px; font-size:13px;}
+input:focus, select:focus{outline:none; border-color:var(--neon); box-shadow:0 0 20px rgba(0, 255, 200, 0.3);}
+button{background:linear-gradient(135deg, var(--neon), #00d4ff); border:none; border-radius:8px; padding:11px 20px; font-weight:600; cursor:pointer; color:black; font-size:13px; transition:all 0.3s; width:100%;}
+button:hover{transform:translateY(-2px); box-shadow:0 6px 16px rgba(0, 255, 200, 0.4);}
+.stat{display:grid; grid-template-columns:repeat(auto-fit, minmax(100px, 1fr)); gap:12px; margin:15px 0;}
+.stat-box{background:rgba(0, 255, 200, 0.05); border:1px solid rgba(0, 255, 200, 0.2); border-radius:8px; padding:12px; text-align:center;}
+.stat-val{font-size:20px; font-weight:800; color:var(--neon);}
+.stat-label{font-size:11px; color:#999; margin-top:5px;}
+.notif{position:fixed; top:20px; right:20px; background:linear-gradient(135deg, var(--neon), #00d4ff); color:black; padding:16px 24px; border-radius:10px; font-weight:600; z-index:300; display:none;}
+@media(max-width:768px){.container{grid-template-columns:1fr;} header h1{font-size:24px;}}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>SANTI</span> FITNESS • NUTRICIÓN</h1>
+  <div id="headerRight"></div>
+</header>
+
+<div class="container">
+  <div class="card">
+    <h2>📊 Calculadora TDEE</h2>
+    <input type="number" id="tdeeAge" placeholder="Edad" value="25">
+    <select id="tdeeGender">
+      <option value="M">Hombre</option>
+      <option value="F">Mujer</option>
+    </select>
+    <input type="number" id="tdeeHeight" placeholder="Altura (cm)" value="175">
+    <input type="number" id="tdeeWeight" placeholder="Peso (kg)" value="75">
+    <select id="tdeeActivity">
+      <option value="1.2">Sedentario (1.2)</option>
+      <option value="1.375">Poco activo (1.375)</option>
+      <option value="1.55" selected>Moderadamente activo (1.55)</option>
+      <option value="1.725">Muy activo (1.725)</option>
+      <option value="1.9">Extremadamente activo (1.9)</option>
+    </select>
+    <button onclick="calcTDEE()">🧮 Calcular TDEE</button>
+    <div class="stat" id="tdeeResult" style="display:none;">
+      <div class="stat-box">
+        <div class="stat-label">BMR</div>
+        <div class="stat-val" id="tdeeShowBMR">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">TDEE</div>
+        <div class="stat-val" id="tdeeShowTDEE">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Volumen +15%</div>
+        <div class="stat-val" id="tdeeBulk">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Corte -15%</div>
+        <div class="stat-val" id="tdeeCut">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>💧 Hidratación Diaria</h2>
+    <div style="text-align:center; margin:15px 0;">
+      <div style="font-size:32px; color:var(--cyan);" id="waterPercent">0%</div>
+      <div style="background:rgba(0, 255, 200, 0.1); border-radius:10px; height:20px; overflow:hidden; margin:10px 0;">
+        <div style="background:linear-gradient(90deg, var(--neon), #00d4ff); height:100%; width:0%; transition:all 0.3s;" id="waterProgress"></div>
+      </div>
+      <div style="font-size:12px; color:#999;"><span id="waterCurrent">0</span>ml / 3000ml</div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      <button style="font-size:12px;" onclick="addWater(250)">+250ml</button>
+      <button style="font-size:12px;" onclick="addWater(500)">+500ml</button>
+      <button style="font-size:12px;" onclick="addWater(750)">+750ml</button>
+      <button style="font-size:12px;" onclick="resetWater()">Reset</button>
+    </div>
+  </div>
+
+  <div class="card" style="grid-column:1/-1;">
+    <h2>💡 Consejos de Nutrición</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:15px;">
+      <div style="background:rgba(0, 255, 200, 0.1); border-left:3px solid var(--neon); padding:12px; border-radius:6px;">
+        <strong style="color:var(--neon);">Proteína</strong>
+        <p style="font-size:12px; margin-top:6px; color:#ccc;">1.6-2.2g por kg de peso corporal.</p>
+      </div>
+      <div style="background:rgba(212, 175, 55, 0.1); border-left:3px solid var(--gold); padding:12px; border-radius:6px;">
+        <strong style="color:var(--gold);">Carbohidratos</strong>
+        <p style="font-size:12px; margin-top:6px; color:#ccc;">3-7g por kg en días de entrenamiento.</p>
+      </div>
+      <div style="background:rgba(196, 77, 255, 0.1); border-left:3px solid var(--purple); padding:12px; border-radius:6px;">
+        <strong style="color:var(--purple);">Grasas</strong>
+        <p style="font-size:12px; margin-top:6px; color:#ccc;">0.5-1.5g por kg para salud hormonal.</p>
+      </div>
+      <div style="background:rgba(255, 107, 157, 0.1); border-left:3px solid var(--pink); padding:12px; border-radius:6px;">
+        <strong style="color:var(--pink);">Agua</strong>
+        <p style="font-size:12px; margin-top:6px; color:#ccc;">3-4 litros diarios para óptimo rendimiento.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="notif" class="notif"></div>
+
+<script>
+let waterToday = parseInt(localStorage.getItem('waterToday')) || 0;
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateWater();
+  const today = new Date().toISOString().split('T')[0];
+  if(localStorage.getItem('waterDate') !== today){
+    waterToday = 0;
+    localStorage.setItem('waterDate', today);
+    updateWater();
+  }
+});
+
+function calcTDEE(){
+  const age = parseInt(document.getElementById('tdeeAge').value);
+  const gender = document.getElementById('tdeeGender').value;
+  const height = parseInt(document.getElementById('tdeeHeight').value);
+  const weight = parseInt(document.getElementById('tdeeWeight').value);
+  const activity = parseFloat(document.getElementById('tdeeActivity').value);
+  
+  let bmr;
+  if(gender === 'M'){
+    bmr = 88.362 + (13.397*weight) + (4.799*height) - (5.677*age);
+  } else {
+    bmr = 447.593 + (9.247*weight) + (3.098*height) - (4.330*age);
+  }
+  
+  const tdee = Math.round(bmr*activity);
+  const bulk = Math.round(tdee*1.15);
+  const cut = Math.round(tdee*0.85);
+  
+  document.getElementById('tdeeShowBMR').textContent = Math.round(bmr);
+  document.getElementById('tdeeShowTDEE').textContent = tdee;
+  document.getElementById('tdeeBulk').textContent = bulk;
+  document.getElementById('tdeeCut').textContent = cut;
+  document.getElementById('tdeeResult').style.display = 'grid';
+  showNotif('✅ TDEE calculado');
+}
+
+function addWater(ml){
+  waterToday += ml;
+  localStorage.setItem('waterToday', waterToday);
+  updateWater();
+  showNotif('💧 Agua agregada');
+}
+
+function resetWater(){
+  waterToday = 0;
+  localStorage.setItem('waterToday', 0);
+  updateWater();
+  showNotif('🔄 Agua reseteada');
+}
+
+function updateWater(){
+  const percent = Math.min(100, Math.round((waterToday/3000)*100));
+  document.getElementById('waterPercent').textContent = percent + '%';
+  document.getElementById('waterProgress').style.width = percent + '%';
+  document.getElementById('waterCurrent').textContent = waterToday;
+}
+
+function showNotif(msg){
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.style.display = 'block';
+  setTimeout(() => n.style.display = 'none', 2500);
+}
+</script>
+</body>
+</html>
